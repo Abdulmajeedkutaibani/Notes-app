@@ -1,5 +1,15 @@
 import React, { useState } from 'react';
-import { Button, Container, TextField, Typography } from '@mui/material';
+import {
+  Button,
+  Container,
+  TextField,
+  Typography,
+  Radio,
+  RadioGroup,
+  FormControlLabel,
+  FormControl,
+  FormLabel,
+} from '@mui/material';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 
 export default function Create() {
@@ -7,13 +17,14 @@ export default function Create() {
   const [details, setDetails] = useState('');
   const [titleError, setTitleError] = useState(false);
   const [detailsError, setDetailsError] = useState(false);
+  const [category, setCategory] = useState('todos');
   const handleSubmit = (e) => {
     e.preventDefault();
     setDetailsError(false);
     setTitleError(false);
 
     if (title && details) {
-      console.log(title, details);
+      console.log(title, details, category);
     }
     if (!title) {
       setTitleError(true);
@@ -67,6 +78,42 @@ export default function Create() {
             display: 'block',
           }}
         />
+        <FormControl
+          sx={{
+            marginTop: '20px',
+            marginBottom: '20px',
+            display: 'block',
+          }}
+        >
+          <FormLabel>Note Category</FormLabel>
+          <RadioGroup
+            value={category}
+            onChange={(e) => {
+              setCategory(e.target.value);
+            }}
+          >
+            <FormControlLabel
+              value='money'
+              control={<Radio color='secondary' />}
+              label='money'
+            />
+            <FormControlLabel
+              value='todos'
+              control={<Radio color='secondary' />}
+              label='Todos'
+            />
+            <FormControlLabel
+              value='reminders'
+              control={<Radio color='secondary' />}
+              label='Reminders'
+            />
+            <FormControlLabel
+              value='work'
+              control={<Radio color='secondary' />}
+              label='Work'
+            />
+          </RadioGroup>
+        </FormControl>
         <Button
           type='submit'
           color='secondary'
