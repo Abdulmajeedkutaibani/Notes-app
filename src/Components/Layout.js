@@ -12,6 +12,7 @@ import {
 } from '@mui/material';
 import { AddCircleOutlined, SubjectOutlined } from '@mui/icons-material';
 import { useHistory, useLocation } from 'react-router';
+import { format } from 'date-fns';
 
 const drawerWidth = 240;
 
@@ -46,7 +47,10 @@ const Layout = ({ children }) => {
       {/* app bar */}
       <AppBar elevation={0} sx={{ width: `calc(100% - ${drawerWidth}px)` }}>
         <Toolbar>
-          <Typography>{Date().toString()}</Typography>
+          <Typography sx={{ flexGrow: 1 }}>
+            Today is the {format(new Date(), 'do MMMM Y')}
+          </Typography>
+          <Typography>User</Typography>
         </Toolbar>
       </AppBar>
       {/* side drawer */}
