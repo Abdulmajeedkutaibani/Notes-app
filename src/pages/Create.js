@@ -11,8 +11,10 @@ import {
   FormLabel,
 } from '@mui/material';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import { useHistory } from 'react-router';
 
 export default function Create() {
+  const history = useHistory();
   const [title, setTitle] = useState('');
   const [details, setDetails] = useState('');
   const [titleError, setTitleError] = useState(false);
@@ -24,7 +26,11 @@ export default function Create() {
     setTitleError(false);
 
     if (title && details) {
-      console.log(title, details, category);
+      fetch('http://localhost:8000/notes', {
+        method: 'POST',
+        headers: { 'Content-type': 'application/json' },
+        body: JSON.stringify({ title, details, category }),
+      }).then(() => history.push('/'));
     }
     if (!title) {
       setTitleError(true);
