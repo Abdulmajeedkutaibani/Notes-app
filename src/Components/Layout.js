@@ -9,6 +9,7 @@ import {
   AppBar,
   Toolbar,
   useTheme,
+  Avatar,
 } from '@mui/material';
 import { AddCircleOutlined, SubjectOutlined } from '@mui/icons-material';
 import { useHistory, useLocation } from 'react-router';
@@ -51,6 +52,10 @@ const Layout = ({ children }) => {
             Today is the {format(new Date(), 'do MMMM Y')}
           </Typography>
           <Typography>User</Typography>
+          <Avatar
+            src='../FullSizeRender.png'
+            sx={{ marginLeft: theme.spacing(2) }}
+          />
         </Toolbar>
       </AppBar>
       {/* side drawer */}
