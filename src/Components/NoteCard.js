@@ -12,7 +12,7 @@ const NoteCard = ({ note, handleDelete }) => {
   return (
     <div>
       <Card
-        elevation={3}
+        elevation={1}
         sx={
           note.category == 'work'
             ? { border: '1px solid red' }

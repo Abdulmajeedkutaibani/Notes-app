@@ -6,18 +6,15 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
+  AppBar,
+  Toolbar,
+  useTheme,
 } from '@mui/material';
 import { AddCircleOutlined, SubjectOutlined } from '@mui/icons-material';
 import { useHistory, useLocation } from 'react-router';
 
 const drawerWidth = 240;
 
-const classes = {
-  page: {
-    background: '#f9f9f9',
-    width: '100%',
-  },
-};
 const menuItems = [
   {
     Text: 'My Notes',
@@ -32,12 +29,26 @@ const menuItems = [
 ];
 
 const Layout = ({ children }) => {
+  const theme = useTheme();
+  const classes = {
+    page: {
+      background: '#f9f9f9',
+      width: '100%',
+      padding: theme.spacing(3),
+    },
+  };
+
   const history = useHistory();
   const location = useLocation();
 
   return (
     <div style={{ display: 'flex' }}>
       {/* app bar */}
+      <AppBar elevation={0} sx={{ width: `calc(100% - ${drawerWidth}px)` }}>
+        <Toolbar>
+          <Typography>{Date().toString()}</Typography>
+        </Toolbar>
+      </AppBar>
       {/* side drawer */}
       <Drawer
         sx={{
@@ -76,7 +87,10 @@ const Layout = ({ children }) => {
           ))}
         </List>
       </Drawer>
-      <div style={classes.page}>{children}</div>
+      <div style={classes.page}>
+        <div style={theme.mixins.toolbar}></div>
+        {children}
+      </div>
     </div>
   );
 };
