@@ -5,6 +5,7 @@ import {
   Typography,
   IconButton,
   Card,
+  Avatar,
 } from '@mui/material';
 import { DeleteOutlined } from '@mui/icons-material';
 
@@ -19,13 +20,30 @@ const NoteCard = ({ note, handleDelete }) => {
             : note.category == 'reminders'
             ? { border: '1px solid blue' }
             : note.category == 'todos'
-            ? { border: '1px solid yellow' }
+            ? { border: '1px solid pink' }
             : note.category == 'money'
             ? { border: '1px solid green' }
             : null
         }
       >
         <CardHeader
+          avatar={
+            <Avatar
+              sx={
+                note.category == 'work'
+                  ? { background: 'red', fontWeight: 'bold' }
+                  : note.category == 'reminders'
+                  ? { background: ' blue', fontWeight: 'bold' }
+                  : note.category == 'todos'
+                  ? { background: 'pink', fontWeight: 'bold' }
+                  : note.category == 'money'
+                  ? { background: ' green', fontWeight: 'bold' }
+                  : null
+              }
+            >
+              {note.category[0].toUpperCase()}
+            </Avatar>
+          }
           action={
             <IconButton onClick={() => handleDelete(note.id)}>
               <DeleteOutlined />
