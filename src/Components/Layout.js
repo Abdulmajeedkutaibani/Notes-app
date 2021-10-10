@@ -50,7 +50,9 @@ const Layout = ({ children }) => {
         anchor='left'
       >
         <div>
-          <Typography variant='h5'>AK Notes</Typography>
+          <Typography variant='h5' sx={{ padding: 2 }}>
+            AK Notes
+          </Typography>
         </div>
 
         {/* list / links */}
