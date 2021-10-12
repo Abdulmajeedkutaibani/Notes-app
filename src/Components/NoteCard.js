@@ -35,7 +35,7 @@ const NoteCard = ({ note, handleDelete }) => {
                   : note.category == 'reminders'
                   ? { background: ' blue', fontWeight: 'bold' }
                   : note.category == 'todos'
-                  ? { background: 'pink', fontWeight: 'bold' }
+                  ? { background: 'purple', fontWeight: 'bold' }
                   : note.category == 'money'
                   ? { background: ' green', fontWeight: 'bold' }
                   : null
