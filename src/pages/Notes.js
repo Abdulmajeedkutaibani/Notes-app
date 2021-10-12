@@ -1,23 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Grid, Paper } from '@mui/material';
+import { Container } from '@mui/material';
 import NoteCard from '../Components/NoteCard';
 import Masonry from 'react-masonry-css';
 import db from '../firebase';
-import { collection, onSnapshot } from '@firebase/firestore';
+import { collection, onSnapshot, doc, deleteDoc } from '@firebase/firestore';
 
 export default function Notes() {
   const [notes, setNotes] = useState([]);
 
   useEffect(() => {
     onSnapshot(collection(db, 'notes'), (snapshot) => {
-      setNotes(snapshot.docs.map((doc) => doc.data()));
+      setNotes(snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
     });
-  });
+  }, []);
 
   const handleDelete = async (id) => {
-    await fetch('http://localhost:8000/notes/' + id, {
-      method: 'DELETE',
-    });
+    const docRef = doc(db, 'notes', id);
+    await deleteDoc(docRef);
     const newNotes = notes.filter((note) => note.id != id);
     setNotes(newNotes);
   };

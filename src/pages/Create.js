@@ -12,6 +12,8 @@ import {
 } from '@mui/material';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import { useHistory } from 'react-router';
+import db from '../firebase';
+import { collection, addDoc } from '@firebase/firestore';
 
 export default function Create() {
   const history = useHistory();
@@ -19,18 +21,23 @@ export default function Create() {
   const [details, setDetails] = useState('');
   const [titleError, setTitleError] = useState(false);
   const [detailsError, setDetailsError] = useState(false);
-  const [category, setCategory] = useState('todos');
-  const handleSubmit = (e) => {
+  const [category, setCategory] = useState('reminders');
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setDetailsError(false);
     setTitleError(false);
 
     if (title && details) {
-      fetch('http://localhost:8000/notes', {
-        method: 'POST',
-        headers: { 'Content-type': 'application/json' },
-        body: JSON.stringify({ title, details, category }),
-      }).then(() => history.push('/'));
+      const collectionRef = collection(db, 'notes');
+      const payload = {
+        title,
+        category,
+        details,
+      };
+      const docReferemce = await addDoc(collectionRef, payload);
+      console.log('The new ID is' + docReferemce.id);
+      history.push('/');
     }
     if (!title) {
       setTitleError(true);
