@@ -22,6 +22,7 @@ import {
   getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  onAuthStateChanged,
 } from 'firebase/auth';
 
 const drawerWidth = 240;
@@ -83,6 +84,7 @@ const Layout = ({ children }) => {
         // Signed in
         const user = userCredential.user;
         console.log(user);
+        setOpenSignUP(false);
         // ...
       })
       .catch((error) => {
@@ -92,18 +94,23 @@ const Layout = ({ children }) => {
       });
   };
 
-  // const authSignIn = getAuth();
-  // signInWithEmailAndPassword(auth, email, password)
-  //   .then((userCredential) => {
-  //     // Signed in
-  //     const user = userCredential.user;
-  //     // ...
-  //   })
-  //   .catch((error) => {
-  //     const errorCode = error.code;
-  //     const errorMessage = error.message;
-  //   });
-
+  const signInUser = () => {
+    const auth = getAuth();
+    const email = loginEmail;
+    const password = loginPassword;
+    signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        // Signed in
+        const user = userCredential.user;
+        console.log('user signed in');
+        setOpenLogin(false);
+        // ...
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+      });
+  };
   return (
     <div style={{ display: 'flex' }}>
       {/* app bar */}
@@ -112,12 +119,16 @@ const Layout = ({ children }) => {
           <Typography sx={{ flexGrow: 1 }}>
             Today is the {format(new Date(), 'do MMMM Y')}
           </Typography>
+
           <Button color='inherit' onClick={handleLoginOpen}>
             Login
           </Button>
+          <Button color='inherit'>Account</Button>
           <Button color='inherit' onClick={handleSignUpOpen}>
             Sign Up
           </Button>
+          <Button color='inherit'>Logout</Button>
+
           {/* Login modal */}
           <Modal
             open={openLogin}
@@ -127,6 +138,7 @@ const Layout = ({ children }) => {
           >
             <Box sx={style}>
               <TextField
+                onChange={(e) => setLoginEmail(e.target.value)}
                 label='Email'
                 variant='outlined'
                 color='secondary'
@@ -140,6 +152,7 @@ const Layout = ({ children }) => {
                 }}
               />
               <TextField
+                onChange={(e) => setLoginPassword(e.target.value)}
                 label='Password'
                 variant='outlined'
                 color='secondary'
@@ -154,6 +167,7 @@ const Layout = ({ children }) => {
                 }}
               />
               <Button
+                onClick={signInUser}
                 color='secondary'
                 variant='contained'
                 sx={{ width: '100%' }}
