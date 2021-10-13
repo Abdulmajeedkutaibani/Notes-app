@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Typography,
   Drawer,
@@ -10,10 +10,19 @@ import {
   Toolbar,
   useTheme,
   Avatar,
+  Button,
+  Modal,
+  TextField,
 } from '@mui/material';
 import { AddCircleOutlined, SubjectOutlined } from '@mui/icons-material';
 import { useHistory, useLocation } from 'react-router';
 import { format } from 'date-fns';
+import { Box } from '@mui/system';
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from 'firebase/auth';
 
 const drawerWidth = 240;
 
@@ -29,8 +38,31 @@ const menuItems = [
     path: '/create',
   },
 ];
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: 400,
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  borderRadius: '8px',
+  boxShadow: 24,
+  p: 4,
+};
 
 const Layout = ({ children }) => {
+  const [openLogin, setOpenLogin] = useState(false);
+  const handleLoginOpen = () => setOpenLogin(true);
+  const handleLoginClose = () => setOpenLogin(false);
+  const [openSignUP, setOpenSignUP] = useState(false);
+  const handleSignUpOpen = () => setOpenSignUP(true);
+  const handleSignUpClose = () => setOpenSignUP(false);
+  const [signUpEmail, setSignUpEmail] = useState();
+  const [signUpPassword, setSignUpPassword] = useState();
+  const [loginEmail, setLoginEmail] = useState();
+  const [loginPassword, setLoginPassword] = useState();
+
   const theme = useTheme();
   const classes = {
     page: {
@@ -39,9 +71,38 @@ const Layout = ({ children }) => {
       padding: theme.spacing(3),
     },
   };
-
   const history = useHistory();
   const location = useLocation();
+
+  const signUpUser = () => {
+    const email = signUpEmail;
+    const password = signUpPassword;
+    const auth = getAuth();
+    createUserWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        // Signed in
+        const user = userCredential.user;
+        console.log(user);
+        // ...
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        // ..
+      });
+  };
+
+  // const authSignIn = getAuth();
+  // signInWithEmailAndPassword(auth, email, password)
+  //   .then((userCredential) => {
+  //     // Signed in
+  //     const user = userCredential.user;
+  //     // ...
+  //   })
+  //   .catch((error) => {
+  //     const errorCode = error.code;
+  //     const errorMessage = error.message;
+  //   });
 
   return (
     <div style={{ display: 'flex' }}>
@@ -51,7 +112,106 @@ const Layout = ({ children }) => {
           <Typography sx={{ flexGrow: 1 }}>
             Today is the {format(new Date(), 'do MMMM Y')}
           </Typography>
-          <Typography>User</Typography>
+          <Button color='inherit' onClick={handleLoginOpen}>
+            Login
+          </Button>
+          <Button color='inherit' onClick={handleSignUpOpen}>
+            Sign Up
+          </Button>
+          {/* Login modal */}
+          <Modal
+            open={openLogin}
+            onClose={handleLoginClose}
+            aria-labelledby='modal-modal-title'
+            aria-describedby='modal-modal-description'
+          >
+            <Box sx={style}>
+              <TextField
+                label='Email'
+                variant='outlined'
+                color='secondary'
+                fullWidth
+                required
+                id='login-email'
+                sx={{
+                  marginTop: '20px',
+                  marginBottom: '20px',
+                  display: 'block',
+                }}
+              />
+              <TextField
+                label='Password'
+                variant='outlined'
+                color='secondary'
+                multiline
+                fullWidth
+                required
+                id='signUp-password'
+                sx={{
+                  marginTop: '20px',
+                  marginBottom: '20px',
+                  display: 'block',
+                }}
+              />
+              <Button
+                color='secondary'
+                variant='contained'
+                sx={{ width: '100%' }}
+              >
+                Login
+              </Button>
+            </Box>
+          </Modal>
+          {/* Sign up modal */}
+          <Modal
+            open={openSignUP}
+            onClose={handleSignUpClose}
+            aria-labelledby='modal-modal-title'
+            aria-describedby='modal-modal-description'
+          >
+            <Box sx={style}>
+              <TextField
+                onChange={(e) => setSignUpEmail(e.target.value)}
+                label='Email'
+                variant='outlined'
+                color='secondary'
+                fullWidth
+                required
+                type='email'
+                helperText='Please enter a valid Email'
+                id='signUp-email'
+                sx={{
+                  marginTop: '20px',
+                  marginBottom: '20px',
+                  display: 'block',
+                }}
+              />
+              <TextField
+                onChange={(e) => setSignUpPassword(e.target.value)}
+                label='Password'
+                variant='outlined'
+                color='secondary'
+                fullWidth
+                required
+                type='password'
+                id='signUp-password'
+                sx={{
+                  marginTop: '20px',
+                  marginBottom: '20px',
+                  display: 'block',
+                }}
+              />
+              <Button
+                onClick={signUpUser}
+                color='secondary'
+                variant='contained'
+                fullWidth
+              >
+                Sign Up
+              </Button>
+            </Box>
+          </Modal>
+
           <Avatar
             src='../FullSizeRender.png'
             sx={{ marginLeft: theme.spacing(2) }}
