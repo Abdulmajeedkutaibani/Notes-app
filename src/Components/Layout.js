@@ -52,6 +52,19 @@ const style = {
   p: 4,
 };
 
+const auth = getAuth();
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    // User is signed in, see docs for a list of available properties
+    // https://firebase.google.com/docs/reference/js/firebase.User
+    const uid = user.uid;
+    // ...
+  } else {
+    // User is signed out
+    // ...
+  }
+});
+
 const Layout = ({ children }) => {
   const [openLogin, setOpenLogin] = useState(false);
   const handleLoginOpen = () => setOpenLogin(true);
@@ -111,6 +124,12 @@ const Layout = ({ children }) => {
         const errorMessage = error.message;
       });
   };
+  const SignOutUser = () => {
+    const auth = getAuth();
+    auth.signOut().then(() => {
+      console.log('user signed out');
+    });
+  };
   return (
     <div style={{ display: 'flex' }}>
       {/* app bar */}
@@ -127,7 +146,9 @@ const Layout = ({ children }) => {
           <Button color='inherit' onClick={handleSignUpOpen}>
             Sign Up
           </Button>
-          <Button color='inherit'>Logout</Button>
+          <Button color='inherit' onClick={SignOutUser}>
+            Logout
+          </Button>
 
           {/* Login modal */}
           <Modal
