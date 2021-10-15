@@ -55,11 +55,12 @@ const style = {
 const auth = getAuth();
 onAuthStateChanged(auth, (user) => {
   if (user) {
-    // User is signed in, see docs for a list of available properties
-    // https://firebase.google.com/docs/reference/js/firebase.User
-    const uid = user.uid;
+    const userEmail = user.email;
+    console.log('user ' + userEmail + ' logged in');
     // ...
   } else {
+    console.log('user logged out');
+
     // User is signed out
     // ...
   }
@@ -114,8 +115,7 @@ const Layout = ({ children }) => {
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // Signed in
-        const user = userCredential.user;
-        console.log('user signed in');
+        const user = userCredential.user.email;
         setOpenLogin(false);
         // ...
       })
@@ -126,9 +126,7 @@ const Layout = ({ children }) => {
   };
   const SignOutUser = () => {
     const auth = getAuth();
-    auth.signOut().then(() => {
-      console.log('user signed out');
-    });
+    auth.signOut().then(() => {});
   };
   return (
     <div style={{ display: 'flex' }}>
@@ -177,9 +175,9 @@ const Layout = ({ children }) => {
                 label='Password'
                 variant='outlined'
                 color='secondary'
-                multiline
                 fullWidth
                 required
+                type='password'
                 id='signUp-password'
                 sx={{
                   marginTop: '20px',
