@@ -4,14 +4,31 @@ import NoteCard from '../Components/NoteCard';
 import Masonry from 'react-masonry-css';
 import db from '../firebase';
 import { collection, onSnapshot, doc, deleteDoc } from '@firebase/firestore';
+import { getAuth, onAuthStateChanged } from '@firebase/auth';
 
 export default function Notes() {
   const [notes, setNotes] = useState([]);
+  const auth = getAuth();
+  const getUserNotes = () => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        const userEmail = user.email;
+        console.log('user ' + userEmail + ' logged in');
+        return onSnapshot(collection(db, 'notes'), (snapshot) => {
+          setNotes(snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+        });
 
-  useEffect(() => {
-    onSnapshot(collection(db, 'notes'), (snapshot) => {
-      setNotes(snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+        // ...
+      } else {
+        console.log('user logged out');
+        return setNotes([]);
+        // User is signed out
+        // ...
+      }
     });
+  };
+  useEffect(() => {
+    getUserNotes();
   }, []);
 
   const handleDelete = async (id) => {

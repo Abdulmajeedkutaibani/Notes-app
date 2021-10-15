@@ -52,20 +52,6 @@ const style = {
   p: 4,
 };
 
-const auth = getAuth();
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    const userEmail = user.email;
-    console.log('user ' + userEmail + ' logged in');
-    // ...
-  } else {
-    console.log('user logged out');
-
-    // User is signed out
-    // ...
-  }
-});
-
 const Layout = ({ children }) => {
   const [openLogin, setOpenLogin] = useState(false);
   const handleLoginOpen = () => setOpenLogin(true);
