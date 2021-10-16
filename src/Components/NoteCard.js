@@ -10,7 +10,6 @@ import {
 import { DeleteOutlined } from '@mui/icons-material';
 
 const NoteCard = ({ note, handleDelete, currentUserId }) => {
-  console.log(note.id, currentUserId);
   return (
     <div>
       <Card

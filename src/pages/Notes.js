@@ -51,15 +51,17 @@ export default function Notes() {
         columnClassName='my-masonry-grid_column'
       >
         {notes.length ? (
-          notes.map((note) => (
-            <div key={note.id}>
-              <NoteCard
-                note={note}
-                handleDelete={handleDelete}
-                currentUserId={auth.currentUser.uid}
-              />
-            </div>
-          ))
+          notes
+            .filter((note) => note.id === auth.currentUser.uid)
+            .map((note) => (
+              <div key={note.id}>
+                <NoteCard
+                  note={note}
+                  handleDelete={handleDelete}
+                  currentUserId={auth.currentUser.uid}
+                />
+              </div>
+            ))
         ) : (
           <Typography variant='h4' fontWeight='bold'>
             Please Log In To View And Create Notes
