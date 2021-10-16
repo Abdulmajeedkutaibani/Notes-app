@@ -12,10 +12,10 @@ export default function Notes() {
   const getUserNotes = () => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        return onSnapshot(collection(db, 'notes'), (snapshot) => {
+        onSnapshot(collection(db, 'notes'), (snapshot) => {
           setNotes(snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
           const userEmail = user.email;
-          console.log('user ' + userEmail + ' logged in');
+          return console.log('user ' + userEmail + ' logged in');
         });
 
         // ...

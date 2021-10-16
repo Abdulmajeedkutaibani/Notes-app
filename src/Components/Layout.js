@@ -63,6 +63,19 @@ const Layout = ({ children }) => {
   const [signUpPassword, setSignUpPassword] = useState();
   const [loginEmail, setLoginEmail] = useState();
   const [loginPassword, setLoginPassword] = useState();
+  const [guestLinks, setGuestLinks] = useState('none');
+  const [userLinks, setUserLinks] = useState('none');
+
+  const auth = getAuth();
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      setUserLinks('block');
+      setGuestLinks('none');
+    } else {
+      setUserLinks('none');
+      setGuestLinks('block');
+    }
+  });
 
   const theme = useTheme();
   const classes = {
@@ -123,14 +136,28 @@ const Layout = ({ children }) => {
             Today is the {format(new Date(), 'do MMMM Y')}
           </Typography>
 
-          <Button color='inherit' onClick={handleLoginOpen}>
+          <Button
+            color='inherit'
+            onClick={handleLoginOpen}
+            sx={{ display: guestLinks }}
+          >
             Login
           </Button>
-          <Button color='inherit'>Account</Button>
-          <Button color='inherit' onClick={handleSignUpOpen}>
+          <Button color='inherit' sx={{ display: userLinks }}>
+            Account
+          </Button>
+          <Button
+            color='inherit'
+            onClick={handleSignUpOpen}
+            sx={{ display: guestLinks }}
+          >
             Sign Up
           </Button>
-          <Button color='inherit' onClick={SignOutUser}>
+          <Button
+            color='inherit'
+            onClick={SignOutUser}
+            sx={{ display: userLinks }}
+          >
             Logout
           </Button>
 
