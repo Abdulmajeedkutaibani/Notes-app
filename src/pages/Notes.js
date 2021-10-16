@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Container } from '@mui/material';
+import { Container, Typography } from '@mui/material';
 import NoteCard from '../Components/NoteCard';
 import Masonry from 'react-masonry-css';
 import db from '../firebase';
@@ -12,10 +12,10 @@ export default function Notes() {
   const getUserNotes = () => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        const userEmail = user.email;
-        console.log('user ' + userEmail + ' logged in');
         return onSnapshot(collection(db, 'notes'), (snapshot) => {
           setNotes(snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+          const userEmail = user.email;
+          console.log('user ' + userEmail + ' logged in');
         });
 
         // ...
@@ -50,11 +50,17 @@ export default function Notes() {
         className='my-masonry-grid'
         columnClassName='my-masonry-grid_column'
       >
-        {notes.map((note) => (
-          <div key={note.id}>
-            <NoteCard note={note} handleDelete={handleDelete} />
-          </div>
-        ))}
+        {notes.length ? (
+          notes.map((note) => (
+            <div key={note.id}>
+              <NoteCard note={note} handleDelete={handleDelete} />
+            </div>
+          ))
+        ) : (
+          <Typography variant='h4' fontWeight='bold'>
+            Please log in to see notes
+          </Typography>
+        )}
       </Masonry>
     </Container>
   );
