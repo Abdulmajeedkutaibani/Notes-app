@@ -24,6 +24,15 @@ import {
   signInWithEmailAndPassword,
   onAuthStateChanged,
 } from 'firebase/auth';
+import db from '../firebase';
+import {
+  collection,
+  onSnapshot,
+  doc,
+  deleteDoc,
+  addDoc,
+  setDoc,
+} from '@firebase/firestore';
 
 const drawerWidth = 240;
 
@@ -57,23 +66,30 @@ const Layout = ({ children }) => {
   const handleLoginOpen = () => setOpenLogin(true);
   const handleLoginClose = () => setOpenLogin(false);
   const [openSignUP, setOpenSignUP] = useState(false);
+  const [openAccount, setOpenAccount] = useState(false);
   const handleSignUpOpen = () => setOpenSignUP(true);
   const handleSignUpClose = () => setOpenSignUP(false);
+  const handleAccountOpen = () => setOpenAccount(true);
+  const handleAccountClose = () => setOpenAccount(false);
   const [signUpEmail, setSignUpEmail] = useState();
   const [signUpPassword, setSignUpPassword] = useState();
+  const [signUpBio, setSignUpBio] = useState();
   const [loginEmail, setLoginEmail] = useState();
   const [loginPassword, setLoginPassword] = useState();
   const [guestLinks, setGuestLinks] = useState('none');
   const [userLinks, setUserLinks] = useState('none');
+  const [accountInfo, setAccountInfo] = useState();
 
   const auth = getAuth();
   onAuthStateChanged(auth, (user) => {
     if (user) {
       setUserLinks('block');
       setGuestLinks('none');
+      setAccountInfo(user.email);
     } else {
       setUserLinks('none');
       setGuestLinks('block');
+      setAccountInfo('');
     }
   });
 
@@ -95,14 +111,25 @@ const Layout = ({ children }) => {
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // Signed in
-        const user = userCredential.user;
-        console.log(user);
+        const userId = userCredential.user.ui;
+        console.log(userId);
+
+        const addUser = async () => {
+          await setDoc(doc(db, 'users', userCredential.user.uid), {
+            email,
+            password,
+            signUpBio,
+          });
+        };
+        addUser();
         setOpenSignUP(false);
+
         // ...
       })
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
+        console.log(errorMessage);
         // ..
       });
   };
@@ -143,7 +170,11 @@ const Layout = ({ children }) => {
           >
             Login
           </Button>
-          <Button color='inherit' sx={{ display: userLinks }}>
+          <Button
+            color='inherit'
+            sx={{ display: userLinks }}
+            onClick={handleAccountOpen}
+          >
             Account
           </Button>
           <Button
@@ -247,6 +278,22 @@ const Layout = ({ children }) => {
                   display: 'block',
                 }}
               />
+              <TextField
+                onChange={(e) => setSignUpBio(e.target.value)}
+                label='bio'
+                variant='outlined'
+                color='secondary'
+                fullWidth
+                required
+                multiline
+                rows={4}
+                id='signUp-bio'
+                sx={{
+                  marginTop: '20px',
+                  marginBottom: '20px',
+                  display: 'block',
+                }}
+              />
               <Button
                 onClick={signUpUser}
                 color='secondary'
@@ -255,6 +302,22 @@ const Layout = ({ children }) => {
               >
                 Sign Up
               </Button>
+            </Box>
+          </Modal>
+          {/* Account Modal */}
+          <Modal
+            open={openAccount}
+            onClose={handleAccountClose}
+            aria-labelledby='modal-modal-title'
+            aria-describedby='modal-modal-description'
+          >
+            <Box sx={style}>
+              <Typography id='modal-modal-title' variant='h6' component='h2'>
+                Logged in as
+              </Typography>
+              <Typography id='modal-modal-description' sx={{ mt: 2 }}>
+                {accountInfo}
+              </Typography>
             </Box>
           </Modal>
 
