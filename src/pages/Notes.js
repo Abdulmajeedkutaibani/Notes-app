@@ -58,7 +58,7 @@ export default function Notes() {
           ))
         ) : (
           <Typography variant='h4' fontWeight='bold'>
-            Please log in to see notes
+            Please Log In To View And Create Notes
           </Typography>
         )}
       </Masonry>

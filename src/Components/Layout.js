@@ -282,7 +282,7 @@ const Layout = ({ children }) => {
         </div>
 
         {/* list / links */}
-        <List>
+        <List sx={{ display: userLinks }}>
           {menuItems.map((item) => (
             <ListItem
               key={item.Text}
