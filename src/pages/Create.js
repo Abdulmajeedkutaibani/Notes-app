@@ -14,6 +14,7 @@ import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import { useHistory } from 'react-router';
 import db from '../firebase';
 import { collection, addDoc } from '@firebase/firestore';
+import { getAuth, onAuthStateChanged } from '@firebase/auth';
 
 export default function Create() {
   const history = useHistory();
@@ -27,6 +28,7 @@ export default function Create() {
     e.preventDefault();
     setDetailsError(false);
     setTitleError(false);
+    const auth = getAuth();
 
     if (title && details) {
       const collectionRef = collection(db, 'notes');
@@ -34,6 +36,7 @@ export default function Create() {
         title,
         category,
         details,
+        id: auth.currentUser.uid,
       };
       const docReferemce = await addDoc(collectionRef, payload);
       console.log('The new ID is' + docReferemce.id);

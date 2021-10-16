@@ -38,7 +38,7 @@ const drawerWidth = 240;
 
 const menuItems = [
   {
-    Text: 'My Notes',
+    Text: 'Notes',
     Icon: <SubjectOutlined color='secondary' />,
     path: '/',
   },
@@ -115,7 +115,7 @@ const Layout = ({ children }) => {
         console.log(userId);
 
         const addUser = async () => {
-          await setDoc(doc(db, 'users', userCredential.user.uid), {
+          await addDoc(doc(db, 'users', userCredential.user.uid), {
             email,
             password,
             signUpBio,

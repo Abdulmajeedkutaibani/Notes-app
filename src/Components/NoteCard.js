@@ -9,7 +9,8 @@ import {
 } from '@mui/material';
 import { DeleteOutlined } from '@mui/icons-material';
 
-const NoteCard = ({ note, handleDelete }) => {
+const NoteCard = ({ note, handleDelete, currentUserId }) => {
+  console.log(note.id, currentUserId);
   return (
     <div>
       <Card
@@ -45,9 +46,11 @@ const NoteCard = ({ note, handleDelete }) => {
             </Avatar>
           }
           action={
-            <IconButton onClick={() => handleDelete(note.id)}>
-              <DeleteOutlined />
-            </IconButton>
+            note.id === currentUserId ? (
+              <IconButton onClick={() => handleDelete(note.id)}>
+                <DeleteOutlined />
+              </IconButton>
+            ) : null
           }
           title={note.title}
           subheader={note.category}

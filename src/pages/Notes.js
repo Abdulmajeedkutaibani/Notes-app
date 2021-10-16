@@ -13,7 +13,7 @@ export default function Notes() {
     onAuthStateChanged(auth, (user) => {
       if (user) {
         onSnapshot(collection(db, 'notes'), (snapshot) => {
-          setNotes(snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+          setNotes(snapshot.docs.map((doc) => ({ ...doc.data() })));
           const userEmail = user.email;
           return console.log('user ' + userEmail + ' logged in');
         });
@@ -53,7 +53,11 @@ export default function Notes() {
         {notes.length ? (
           notes.map((note) => (
             <div key={note.id}>
-              <NoteCard note={note} handleDelete={handleDelete} />
+              <NoteCard
+                note={note}
+                handleDelete={handleDelete}
+                currentUserId={auth.currentUser.uid}
+              />
             </div>
           ))
         ) : (
