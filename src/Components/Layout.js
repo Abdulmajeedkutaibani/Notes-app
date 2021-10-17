@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Typography,
   Drawer,
@@ -13,6 +13,7 @@ import {
   Button,
   Modal,
   TextField,
+  Input,
 } from '@mui/material';
 import { AddCircleOutlined, SubjectOutlined } from '@mui/icons-material';
 import { useHistory, useLocation } from 'react-router';
@@ -79,6 +80,15 @@ const Layout = ({ children }) => {
   const [guestLinks, setGuestLinks] = useState('none');
   const [userLinks, setUserLinks] = useState('none');
   const [accountInfo, setAccountInfo] = useState();
+  const [profilePhoto, setProfilePhoto] = useState(null);
+  const [imageUrl, setImageUrl] = useState();
+
+  useEffect(() => {
+    if (profilePhoto) {
+      setImageUrl(URL.createObjectURL(profilePhoto));
+      setOpenAccount(false);
+    }
+  }, [profilePhoto]);
 
   const auth = getAuth();
   onAuthStateChanged(auth, (user) => {
@@ -90,6 +100,7 @@ const Layout = ({ children }) => {
       setUserLinks('none');
       setGuestLinks('block');
       setAccountInfo('');
+      setImageUrl(null);
     }
   });
 
@@ -108,6 +119,7 @@ const Layout = ({ children }) => {
     const email = signUpEmail;
     const password = signUpPassword;
     const auth = getAuth();
+
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // Signed in
@@ -115,7 +127,7 @@ const Layout = ({ children }) => {
         console.log(userId);
 
         const addUser = async () => {
-          await addDoc(doc(db, 'users', userCredential.user.uid), {
+          await addDoc(doc(db, 'users', userId), {
             email,
             password,
             signUpBio,
@@ -154,6 +166,7 @@ const Layout = ({ children }) => {
     const auth = getAuth();
     auth.signOut().then(() => {});
   };
+
   return (
     <div style={{ display: 'flex' }}>
       {/* app bar */}
@@ -191,6 +204,7 @@ const Layout = ({ children }) => {
           >
             Logout
           </Button>
+          <Avatar src={imageUrl} sx={{ marginLeft: theme.spacing(2) }} />
 
           {/* Login modal */}
           <Modal
@@ -318,13 +332,21 @@ const Layout = ({ children }) => {
               <Typography id='modal-modal-description' sx={{ mt: 2 }}>
                 {accountInfo}
               </Typography>
+              <label htmlFor='contained-button-file'>
+                <Input
+                  accept='image/*'
+                  id='contained-button-file'
+                  multiple
+                  type='file'
+                  sx={{ display: 'none' }}
+                  onChange={(e) => setProfilePhoto(e.target.files[0])}
+                />
+                <Button variant='contained' component='span'>
+                  Upload
+                </Button>
+              </label>
             </Box>
           </Modal>
-
-          <Avatar
-            src='../FullSizeRender.png'
-            sx={{ marginLeft: theme.spacing(2) }}
-          />
         </Toolbar>
       </AppBar>
       {/* side drawer */}

@@ -31,15 +31,15 @@ export default function Create() {
     const auth = getAuth();
 
     if (title && details) {
+      const userId = auth.currentUser.uid;
       const collectionRef = collection(db, 'notes');
       const payload = {
         title,
         category,
         details,
-        id: auth.currentUser.uid,
+        userId,
       };
-      const docReferemce = await addDoc(collectionRef, payload);
-      console.log('The new ID is' + docReferemce.id);
+      await addDoc(collectionRef, payload);
       history.push('/');
     }
     if (!title) {

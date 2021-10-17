@@ -45,7 +45,7 @@ const NoteCard = ({ note, handleDelete, currentUserId }) => {
             </Avatar>
           }
           action={
-            note.id === currentUserId ? (
+            note.userId === currentUserId ? (
               <IconButton onClick={() => handleDelete(note.id)}>
                 <DeleteOutlined />
               </IconButton>

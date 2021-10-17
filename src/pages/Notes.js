@@ -13,14 +13,14 @@ export default function Notes() {
     onAuthStateChanged(auth, (user) => {
       if (user) {
         onSnapshot(collection(db, 'notes'), (snapshot) => {
-          setNotes(snapshot.docs.map((doc) => ({ ...doc.data() })));
-          const userEmail = user.email;
-          return console.log('user ' + userEmail + ' logged in');
+          return setNotes(
+            snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
+          );
         });
-
+        console.log(auth.currentUser.email + ' logged in');
         // ...
       } else {
-        console.log('user logged out');
+        console.log('User logged out');
         return setNotes([]);
         // User is signed out
         // ...
@@ -52,7 +52,7 @@ export default function Notes() {
       >
         {notes.length ? (
           notes
-            .filter((note) => note.id === auth.currentUser.uid)
+            .filter((note) => note.userId === auth.currentUser.uid)
             .map((note) => (
               <div key={note.id}>
                 <NoteCard
