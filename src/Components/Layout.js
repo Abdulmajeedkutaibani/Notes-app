@@ -34,7 +34,7 @@ import {
   addDoc,
   setDoc,
 } from '@firebase/firestore';
-import { getStorage, ref, uploadBytes } from 'firebase/storage';
+import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 const drawerWidth = 240;
 
 const menuItems = [
@@ -64,6 +64,7 @@ const style = {
 
 const Layout = ({ children }) => {
   const auth = getAuth();
+  const storage = getStorage();
   const [openLogin, setOpenLogin] = useState(false);
   const handleLoginOpen = () => setOpenLogin(true);
   const handleLoginClose = () => setOpenLogin(false);
@@ -85,32 +86,44 @@ const Layout = ({ children }) => {
   const [imageUrl, setImageUrl] = useState();
 
   // Get a reference to the storage service, which is used to create references in your storage bucket
-  const storage = getStorage();
-
-  // Create a storage reference from our storage service
-  const imagesRef = ref(storage, `PhotoCollection/${auth.currentUser.uid}`);
-  console.log(profilePhoto);
-  useEffect(() => {
-    if (profilePhoto) {
-      setImageUrl(URL.createObjectURL(profilePhoto));
-      uploadBytes(imagesRef, profilePhoto).then((snapshot) => {
-        console.log('Uploaded a blob or file!');
-      });
-      setOpenAccount(false);
-    }
-  }, [profilePhoto]);
-
   onAuthStateChanged(auth, (user) => {
     if (user) {
       setUserLinks('block');
       setGuestLinks('none');
       setAccountInfo(user.email);
+      getDownloadURL(
+        ref(storage, `PhotoCollection/${auth.currentUser.uid}`)
+      ).then((url) => {
+        setImageUrl(url);
+      });
     } else {
       setUserLinks('none');
       setGuestLinks('block');
       setAccountInfo('');
+      setImageUrl(null);
     }
   });
+
+  // Create a storage reference from our storage service
+  const uploadImage = () => {
+    const auth = getAuth();
+    const imagesRef = ref(storage, `PhotoCollection/${auth.currentUser.uid}`);
+    uploadBytes(imagesRef, profilePhoto).then((snapshot) => {
+      console.log('Uploaded a blob or file!');
+    });
+  };
+
+  useEffect(() => {
+    if (profilePhoto) {
+      uploadImage();
+      setOpenAccount(false);
+      getDownloadURL(
+        ref(storage, `PhotoCollection/${auth.currentUser.uid}`)
+      ).then((url) => {
+        setImageUrl(url);
+      });
+    }
+  }, [profilePhoto]);
 
   const theme = useTheme();
   const classes = {
@@ -130,7 +143,7 @@ const Layout = ({ children }) => {
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // Signed in
-        const userId = userCredential.user.ui;
+        const userId = userCredential.user.uid;
         console.log(userId);
 
         setOpenSignUP(false);
