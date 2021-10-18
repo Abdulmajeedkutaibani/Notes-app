@@ -34,7 +34,7 @@ import {
   addDoc,
   setDoc,
 } from '@firebase/firestore';
-
+import { getStorage, ref, uploadBytes } from 'firebase/storage';
 const drawerWidth = 240;
 
 const menuItems = [
@@ -63,6 +63,7 @@ const style = {
 };
 
 const Layout = ({ children }) => {
+  const auth = getAuth();
   const [openLogin, setOpenLogin] = useState(false);
   const handleLoginOpen = () => setOpenLogin(true);
   const handleLoginClose = () => setOpenLogin(false);
@@ -80,17 +81,25 @@ const Layout = ({ children }) => {
   const [guestLinks, setGuestLinks] = useState('none');
   const [userLinks, setUserLinks] = useState('none');
   const [accountInfo, setAccountInfo] = useState();
-  const [profilePhoto, setProfilePhoto] = useState(null);
+  const [profilePhoto, setProfilePhoto] = useState();
   const [imageUrl, setImageUrl] = useState();
 
+  // Get a reference to the storage service, which is used to create references in your storage bucket
+  const storage = getStorage();
+
+  // Create a storage reference from our storage service
+  const imagesRef = ref(storage, `PhotoCollection/${auth.currentUser.uid}`);
+  console.log(profilePhoto);
   useEffect(() => {
     if (profilePhoto) {
       setImageUrl(URL.createObjectURL(profilePhoto));
+      uploadBytes(imagesRef, profilePhoto).then((snapshot) => {
+        console.log('Uploaded a blob or file!');
+      });
       setOpenAccount(false);
     }
   }, [profilePhoto]);
 
-  const auth = getAuth();
   onAuthStateChanged(auth, (user) => {
     if (user) {
       setUserLinks('block');
@@ -100,7 +109,6 @@ const Layout = ({ children }) => {
       setUserLinks('none');
       setGuestLinks('block');
       setAccountInfo('');
-      setImageUrl(null);
     }
   });
 
@@ -119,21 +127,12 @@ const Layout = ({ children }) => {
     const email = signUpEmail;
     const password = signUpPassword;
     const auth = getAuth();
-
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // Signed in
         const userId = userCredential.user.ui;
         console.log(userId);
 
-        const addUser = async () => {
-          await addDoc(doc(db, 'users', userId), {
-            email,
-            password,
-            signUpBio,
-          });
-        };
-        addUser();
         setOpenSignUP(false);
 
         // ...
@@ -147,7 +146,6 @@ const Layout = ({ children }) => {
   };
 
   const signInUser = () => {
-    const auth = getAuth();
     const email = loginEmail;
     const password = loginPassword;
     signInWithEmailAndPassword(auth, email, password)
@@ -163,7 +161,6 @@ const Layout = ({ children }) => {
       });
   };
   const SignOutUser = () => {
-    const auth = getAuth();
     auth.signOut().then(() => {});
   };
 
