@@ -1,13 +1,25 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Typography } from '@mui/material';
+import {
+  Avatar,
+  Button,
+  Card,
+  CardContent,
+  CardHeader,
+  Container,
+  IconButton,
+  Typography,
+} from '@mui/material';
 import NoteCard from '../Components/NoteCard';
 import Masonry from 'react-masonry-css';
 import db from '../firebase';
 import { collection, onSnapshot, doc, deleteDoc } from '@firebase/firestore';
 import { getAuth, onAuthStateChanged } from '@firebase/auth';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import { Link } from 'react-router-dom';
 
 export default function Notes() {
   const [notes, setNotes] = useState([]);
+  const [addNoteDisplay, setaddNoteDisplay] = useState('none');
   const auth = getAuth();
   const getUserNotes = () => {
     onAuthStateChanged(auth, (user) => {
@@ -18,9 +30,11 @@ export default function Notes() {
           );
         });
         console.log(auth.currentUser.email + ' logged in');
+        setaddNoteDisplay('flex');
         // ...
       } else {
         console.log('User logged out');
+        setaddNoteDisplay('none');
         return setNotes([]);
         // User is signed out
         // ...
@@ -67,6 +81,27 @@ export default function Notes() {
             Please Log In To View And Create Notes
           </Typography>
         )}
+        <Button
+          color='inherit'
+          sx={{
+            display: addNoteDisplay,
+            flexDirection: 'column',
+          }}
+        >
+          <Link
+            to='/create'
+            style={{ textDecoration: 'none', color: '#2196f3' }}
+          >
+            <AddCircleOutlineIcon sx={{ fontSize: 90 }} />
+            <Typography
+              variant='h5'
+              fontWeight='bold'
+              sx={{ textAlign: 'center' }}
+            >
+              Create A New Note
+            </Typography>
+          </Link>
+        </Button>
       </Masonry>
     </Container>
   );

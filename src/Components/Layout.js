@@ -180,7 +180,12 @@ const Layout = ({ children }) => {
   return (
     <div style={{ display: 'flex' }}>
       {/* app bar */}
-      <AppBar elevation={0} sx={{ width: `calc(100% - ${drawerWidth}px)` }}>
+      <AppBar
+        elevation={0}
+        sx={{
+          width: `calc(100% - ${drawerWidth}px)`,
+        }}
+      >
         <Toolbar>
           <Typography sx={{ flexGrow: 1 }}>
             Today is the {format(new Date(), 'do MMMM Y')}
