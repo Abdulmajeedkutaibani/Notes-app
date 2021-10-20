@@ -15,6 +15,7 @@ import {
   TextField,
   Input,
   InputAdornment,
+  Grid,
 } from '@mui/material';
 import {
   AccountCircle,
@@ -43,6 +44,7 @@ import {
   getDoc,
 } from '@firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { green, LightGreen } from '@mui/material/colors';
 const drawerWidth = 240;
 
 const menuItems = [
@@ -62,7 +64,8 @@ const style = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: 400,
+  maxWidth: 400,
+  minWidth: 200,
   bgcolor: 'background.paper',
   border: '2px solid #000',
   borderRadius: '8px',
@@ -101,6 +104,11 @@ const Layout = ({ children }) => {
       setUserLinks('block');
       setGuestLinks('none');
       setAccountInfo(user.email);
+      onSnapshot(doc(db, 'users', auth.currentUser.uid), (doc) => {
+        setSignUpName(doc.data().name);
+        setSignUpBio(doc.data().bio);
+      });
+
       getDownloadURL(ref(storage, `PhotoCollection/${auth.currentUser.uid}`))
         .then((url) => {
           setImageUrl(url);
@@ -167,6 +175,7 @@ const Layout = ({ children }) => {
         });
         onSnapshot(doc(db, 'users', auth.currentUser.uid), (doc) => {
           setSignUpName(doc.data().name);
+          setSignUpBio(doc.data().bio);
         });
         setOpenSignUP(false);
 
@@ -206,6 +215,7 @@ const Layout = ({ children }) => {
     <div style={{ display: 'flex' }}>
       {/* app bar */}
       <AppBar
+        color='inherit'
         elevation={0}
         sx={{
           width: `calc(100% - ${drawerWidth}px)`,
@@ -302,7 +312,7 @@ const Layout = ({ children }) => {
               />
               <Button
                 onClick={signInUser}
-                color='secondary'
+                color='primary'
                 variant='contained'
                 sx={{ width: '100%' }}
               >
@@ -318,6 +328,9 @@ const Layout = ({ children }) => {
             aria-describedby='modal-modal-description'
           >
             <Box sx={style}>
+              <Typography variant='h5' fontWeight='bold'>
+                Sign Up
+              </Typography>
               <TextField
                 onChange={(e) => setSignUpName(e.target.value)}
                 label='Name'
@@ -405,9 +418,9 @@ const Layout = ({ children }) => {
 
               <Button
                 onClick={signUpUser}
-                color='secondary'
                 variant='contained'
                 fullWidth
+                color='success'
               >
                 Sign Up
               </Button>
@@ -421,30 +434,63 @@ const Layout = ({ children }) => {
             aria-describedby='modal-modal-description'
           >
             <Box sx={style}>
-              <Typography id='modal-modal-title' variant='h6' component='h2'>
-                Logged in as {signUpName}
-              </Typography>
-              <Typography id='modal-modal-description' sx={{ mt: 2 }}>
-                {accountInfo}
-              </Typography>
-              <label htmlFor='contained-button-file'>
-                <Input
-                  id='contained-button-file'
-                  accept='image/*'
-                  multiple
-                  type='file'
-                  sx={{ display: 'none' }}
-                  onChange={(e) => setProfilePhoto(e.target.files[0])}
-                />
-                <Button
-                  variant='contained'
-                  component='span'
-                  sx={{ marginTop: 2 }}
-                >
-                  Upload
-                </Button>
-              </label>
-              <Avatar src={imageUrl} sx={{ marginLeft: theme.spacing(2) }} />
+              <Grid container spacing={4}>
+                <Grid item xs={12} sx={{ mx: 'auto' }}>
+                  <Typography
+                    id='modal-modal-title'
+                    variant='h6'
+                    component='h2'
+                  >
+                    Logged in as {signUpName}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12} sx={{ mx: 'auto' }}>
+                  <Typography
+                    id='modal-modal-title'
+                    variant='h6'
+                    component='h2'
+                  >
+                    User Email: {accountInfo}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12} sx={{ mx: 'auto' }}>
+                  <Typography
+                    id='modal-modal-title'
+                    variant='h6'
+                    component='h2'
+                  >
+                    Bio: {signUpBio}
+                  </Typography>
+                </Grid>
+
+                <Grid item sx={{ mx: 'auto' }}>
+                  <label htmlFor='contained-button-file'>
+                    <Input
+                      id='contained-button-file'
+                      accept='image/*'
+                      multiple
+                      type='file'
+                      sx={{ display: 'none' }}
+                      onChange={(e) => setProfilePhoto(e.target.files[0])}
+                    />
+                    <Button variant='contained' component='span'>
+                      Upload A Profile Photo
+                    </Button>
+                  </label>
+                </Grid>
+
+                <Grid item xs={12}>
+                  <Avatar
+                    src={imageUrl}
+                    sx={{
+                      mx: 'auto',
+                      width: 130,
+                      height: 130,
+                      border: '1px solid lightblue',
+                    }}
+                  />
+                </Grid>
+              </Grid>
             </Box>
           </Modal>
         </Toolbar>
