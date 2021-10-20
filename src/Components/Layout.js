@@ -14,8 +14,15 @@ import {
   Modal,
   TextField,
   Input,
+  InputAdornment,
 } from '@mui/material';
-import { AddCircleOutlined, SubjectOutlined } from '@mui/icons-material';
+import {
+  AccountCircle,
+  AddCircleOutlined,
+  AlternateEmail,
+  SubjectOutlined,
+  VpnKey,
+} from '@mui/icons-material';
 import { useHistory, useLocation } from 'react-router';
 import { format } from 'date-fns';
 import { Box } from '@mui/system';
@@ -33,6 +40,7 @@ import {
   deleteDoc,
   addDoc,
   setDoc,
+  getDoc,
 } from '@firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 const drawerWidth = 240;
@@ -74,6 +82,7 @@ const Layout = ({ children }) => {
   const handleSignUpClose = () => setOpenSignUP(false);
   const handleAccountOpen = () => setOpenAccount(true);
   const handleAccountClose = () => setOpenAccount(false);
+  const [signUpName, setSignUpName] = useState('Not Set');
   const [signUpEmail, setSignUpEmail] = useState();
   const [signUpPassword, setSignUpPassword] = useState();
   const [signUpBio, setSignUpBio] = useState();
@@ -84,6 +93,7 @@ const Layout = ({ children }) => {
   const [accountInfo, setAccountInfo] = useState();
   const [profilePhoto, setProfilePhoto] = useState();
   const [imageUrl, setImageUrl] = useState();
+  const [errorMessage, setErrorMessage] = useState(false);
 
   // Get a reference to the storage service, which is used to create references in your storage bucket
   onAuthStateChanged(auth, (user) => {
@@ -91,11 +101,13 @@ const Layout = ({ children }) => {
       setUserLinks('block');
       setGuestLinks('none');
       setAccountInfo(user.email);
-      getDownloadURL(
-        ref(storage, `PhotoCollection/${auth.currentUser.uid}`)
-      ).then((url) => {
-        setImageUrl(url);
-      });
+      getDownloadURL(ref(storage, `PhotoCollection/${auth.currentUser.uid}`))
+        .then((url) => {
+          setImageUrl(url);
+        })
+        .catch((err) => {
+          console.log(err.message);
+        });
     } else {
       setUserLinks('none');
       setGuestLinks('block');
@@ -104,7 +116,7 @@ const Layout = ({ children }) => {
     }
   });
 
-  // Create a storage reference from our storage service
+  // Create a storage reference
   const uploadImage = () => {
     const auth = getAuth();
     const imagesRef = ref(storage, `PhotoCollection/${auth.currentUser.uid}`);
@@ -136,16 +148,26 @@ const Layout = ({ children }) => {
   const history = useHistory();
   const location = useLocation();
 
-  const signUpUser = () => {
+  const signUpUser = async () => {
     const email = signUpEmail;
     const password = signUpPassword;
+    const bio = signUpBio;
+    const name = signUpName;
     const auth = getAuth();
+
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // Signed in
         const userId = userCredential.user.uid;
         console.log(userId);
-
+        setProfilePhoto(userId);
+        setDoc(doc(db, 'users', userId), {
+          name,
+          bio,
+        });
+        onSnapshot(doc(db, 'users', auth.currentUser.uid), (doc) => {
+          setSignUpName(doc.data().name);
+        });
         setOpenSignUP(false);
 
         // ...
@@ -153,7 +175,8 @@ const Layout = ({ children }) => {
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
-        console.log(errorMessage);
+        setErrorMessage(true);
+
         // ..
       });
   };
@@ -170,7 +193,9 @@ const Layout = ({ children }) => {
       })
       .catch((error) => {
         const errorCode = error.code;
-        const errorMessage = error.message;
+        const errorMessage = error;
+        console.log('please enter correct sign in info');
+        setErrorMessage(true);
       });
   };
   const SignOutUser = () => {
@@ -228,7 +253,7 @@ const Layout = ({ children }) => {
             aria-labelledby='modal-modal-title'
             aria-describedby='modal-modal-description'
           >
-            <Box sx={style}>
+            <Box sx={style} component='form' noValidate>
               <TextField
                 onChange={(e) => setLoginEmail(e.target.value)}
                 label='Email'
@@ -236,11 +261,19 @@ const Layout = ({ children }) => {
                 color='secondary'
                 fullWidth
                 required
+                type='email'
                 id='login-email'
                 sx={{
                   marginTop: '20px',
                   marginBottom: '20px',
                   display: 'block',
+                }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position='start'>
+                      <AccountCircle />
+                    </InputAdornment>
+                  ),
                 }}
               />
               <TextField
@@ -251,11 +284,20 @@ const Layout = ({ children }) => {
                 fullWidth
                 required
                 type='password'
-                id='signUp-password'
+                id='login-password'
+                error={errorMessage}
+                helperText={errorMessage ? 'Unable To Sign In' : null}
                 sx={{
                   marginTop: '20px',
                   marginBottom: '20px',
                   display: 'block',
+                }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position='start'>
+                      <VpnKey />
+                    </InputAdornment>
+                  ),
                 }}
               />
               <Button
@@ -277,6 +319,29 @@ const Layout = ({ children }) => {
           >
             <Box sx={style}>
               <TextField
+                onChange={(e) => setSignUpName(e.target.value)}
+                label='Name'
+                variant='outlined'
+                color='secondary'
+                fullWidth
+                required
+                error={errorMessage}
+                helperText={errorMessage ? 'This Field Is Required' : null}
+                id='signUp-name'
+                sx={{
+                  marginTop: '20px',
+                  marginBottom: '20px',
+                  display: 'block',
+                }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position='start'>
+                      <AccountCircle />
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              <TextField
                 onChange={(e) => setSignUpEmail(e.target.value)}
                 label='Email'
                 variant='outlined'
@@ -290,6 +355,13 @@ const Layout = ({ children }) => {
                   marginTop: '20px',
                   marginBottom: '20px',
                   display: 'block',
+                }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position='start'>
+                      <AlternateEmail />
+                    </InputAdornment>
+                  ),
                 }}
               />
               <TextField
@@ -305,6 +377,13 @@ const Layout = ({ children }) => {
                   marginTop: '20px',
                   marginBottom: '20px',
                   display: 'block',
+                }}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position='start'>
+                      <VpnKey />
+                    </InputAdornment>
+                  ),
                 }}
               />
               <TextField
@@ -323,6 +402,7 @@ const Layout = ({ children }) => {
                   display: 'block',
                 }}
               />
+
               <Button
                 onClick={signUpUser}
                 color='secondary'
@@ -342,24 +422,29 @@ const Layout = ({ children }) => {
           >
             <Box sx={style}>
               <Typography id='modal-modal-title' variant='h6' component='h2'>
-                Logged in as
+                Logged in as {signUpName}
               </Typography>
               <Typography id='modal-modal-description' sx={{ mt: 2 }}>
                 {accountInfo}
               </Typography>
               <label htmlFor='contained-button-file'>
                 <Input
-                  accept='image/*'
                   id='contained-button-file'
+                  accept='image/*'
                   multiple
                   type='file'
                   sx={{ display: 'none' }}
                   onChange={(e) => setProfilePhoto(e.target.files[0])}
                 />
-                <Button variant='contained' component='span'>
+                <Button
+                  variant='contained'
+                  component='span'
+                  sx={{ marginTop: 2 }}
+                >
                   Upload
                 </Button>
               </label>
+              <Avatar src={imageUrl} sx={{ marginLeft: theme.spacing(2) }} />
             </Box>
           </Modal>
         </Toolbar>

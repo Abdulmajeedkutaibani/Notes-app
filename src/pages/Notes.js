@@ -18,12 +18,16 @@ import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
 import { Link } from 'react-router-dom';
 
 export default function Notes() {
-  const [notes, setNotes] = useState([]);
-  const [addNoteDisplay, setaddNoteDisplay] = useState('none');
   const auth = getAuth();
+  const [notes, setNotes] = useState([]);
+  const [noteId, setNoteID] = useState('');
+  const [addNoteDisplay, setaddNoteDisplay] = useState('none');
+  const [loginMessageDisplay, setLoginMessageDisplay] = useState('none');
   const getUserNotes = () => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
+        setLoginMessageDisplay('none');
+        setNoteID(auth.currentUser.uid);
         onSnapshot(collection(db, 'notes'), (snapshot) => {
           return setNotes(
             snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
@@ -33,6 +37,9 @@ export default function Notes() {
         setaddNoteDisplay('flex');
         // ...
       } else {
+        setNoteID('');
+        setLoginMessageDisplay('block');
+
         console.log('User logged out');
         setaddNoteDisplay('none');
         return setNotes([]);
@@ -64,23 +71,25 @@ export default function Notes() {
         className='my-masonry-grid'
         columnClassName='my-masonry-grid_column'
       >
-        {notes.length ? (
-          notes
-            .filter((note) => note.userId === auth.currentUser.uid)
-            .map((note) => (
-              <div key={note.id}>
-                <NoteCard
-                  note={note}
-                  handleDelete={handleDelete}
-                  currentUserId={auth.currentUser.uid}
-                />
-              </div>
-            ))
-        ) : (
-          <Typography variant='h4' fontWeight='bold'>
-            Please Log In To View And Create Notes
-          </Typography>
-        )}
+        {notes
+          .filter((note) => note.userId === auth.currentUser.uid)
+          .map((note) => (
+            <div key={noteId}>
+              <NoteCard
+                note={note}
+                handleDelete={handleDelete}
+                currentUserId={auth.currentUser.uid}
+              />
+            </div>
+          ))}
+        <Typography
+          variant='h4'
+          fontWeight='bold'
+          sx={{ display: loginMessageDisplay }}
+        >
+          Please Log In To View And Create Notes
+        </Typography>
+
         <Button
           color='inherit'
           sx={{
