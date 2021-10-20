@@ -434,14 +434,17 @@ const Layout = ({ children }) => {
             aria-describedby='modal-modal-description'
           >
             <Box sx={style}>
-              <Grid container spacing={4}>
-                <Grid item xs={12} sx={{ mx: 'auto' }}>
+              <Grid container spacing={2}>
+                <Grid item xs={12}>
                   <Typography
                     id='modal-modal-title'
                     variant='h6'
                     component='h2'
                   >
-                    Logged in as {signUpName}
+                    Logged in as:
+                    <Typography variant='h6' component='h2' color='green'>
+                      {signUpName}
+                    </Typography>
                   </Typography>
                 </Grid>
                 <Grid item xs={12} sx={{ mx: 'auto' }}>
@@ -450,19 +453,36 @@ const Layout = ({ children }) => {
                     variant='h6'
                     component='h2'
                   >
-                    User Email: {accountInfo}
+                    User Email:
+                    <Typography variant='h6' component='h2' color='teal'>
+                      {accountInfo}
+                    </Typography>
                   </Typography>
                 </Grid>
-                <Grid item xs={12} sx={{ mx: 'auto' }}>
+                <Grid item xs={12}>
                   <Typography
                     id='modal-modal-title'
                     variant='h6'
                     component='h2'
                   >
-                    Bio: {signUpBio}
+                    Bio:
+                    <Typography variant='h6' component='h2' color='red'>
+                      {signUpBio}
+                    </Typography>
                   </Typography>
                 </Grid>
 
+                <Grid item xs={12}>
+                  <Avatar
+                    src={imageUrl}
+                    sx={{
+                      mx: 'auto',
+                      width: 130,
+                      height: 130,
+                      border: '1px solid lightblue',
+                    }}
+                  />
+                </Grid>
                 <Grid item sx={{ mx: 'auto' }}>
                   <label htmlFor='contained-button-file'>
                     <Input
@@ -477,18 +497,6 @@ const Layout = ({ children }) => {
                       Upload A Profile Photo
                     </Button>
                   </label>
-                </Grid>
-
-                <Grid item xs={12}>
-                  <Avatar
-                    src={imageUrl}
-                    sx={{
-                      mx: 'auto',
-                      width: 130,
-                      height: 130,
-                      border: '1px solid lightblue',
-                    }}
-                  />
                 </Grid>
               </Grid>
             </Box>
