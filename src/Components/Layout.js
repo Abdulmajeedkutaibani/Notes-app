@@ -16,6 +16,7 @@ import {
   Input,
   InputAdornment,
   Grid,
+  Hidden,
 } from '@mui/material';
 import {
   AccountCircle,
@@ -218,7 +219,7 @@ const Layout = ({ children }) => {
         color='inherit'
         elevation={0}
         sx={{
-          width: `calc(100% - ${drawerWidth}px)`,
+          width: { sm: `calc(100% - ${drawerWidth}px)`, xs: '100%' },
         }}
       >
         <Toolbar>
@@ -509,6 +510,7 @@ const Layout = ({ children }) => {
           '& .MuiDrawer-paper': {
             width: drawerWidth,
           },
+          display: { xs: 'none', sm: 'block' },
         }}
         variant='permanent'
         anchor='left'

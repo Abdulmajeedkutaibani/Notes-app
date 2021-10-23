@@ -80,19 +80,13 @@ export default function Notes() {
                 </div>
               ))
           : null}
-        <Typography
-          variant='h4'
-          fontWeight='bold'
-          sx={{ display: loginMessageDisplay }}
-        >
-          Please Log In To View And Create Notes
-        </Typography>
 
         <Button
           color='inherit'
           sx={{
             display: addNoteDisplay,
             flexDirection: 'column',
+            width: { xs: '100%' },
           }}
         >
           <Link
@@ -110,6 +104,13 @@ export default function Notes() {
           </Link>
         </Button>
       </Masonry>
+      <Typography
+        variant='h4'
+        fontWeight='bold'
+        sx={{ display: loginMessageDisplay }}
+      >
+        Please Log In To View And Create Notes
+      </Typography>
     </Container>
   );
 }
