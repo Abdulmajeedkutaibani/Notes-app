@@ -34,17 +34,9 @@ import {
   onAuthStateChanged,
 } from 'firebase/auth';
 import db from '../firebase';
-import {
-  collection,
-  onSnapshot,
-  doc,
-  deleteDoc,
-  addDoc,
-  setDoc,
-  getDoc,
-} from '@firebase/firestore';
+import { onSnapshot, doc, setDoc } from '@firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { green, LightGreen } from '@mui/material/colors';
+
 const drawerWidth = 240;
 
 const menuItems = [
@@ -65,6 +57,7 @@ const style = {
   left: '50%',
   transform: 'translate(-50%, -50%)',
   maxWidth: 400,
+  width: 300,
   minWidth: 200,
   bgcolor: 'background.paper',
   border: '2px solid #000',
@@ -208,9 +201,16 @@ const Layout = ({ children }) => {
       });
   };
   const SignOutUser = () => {
-    auth.signOut().then(() => {});
+    auth.signOut().catch((error) => {
+      console.log(error.message);
+    });
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log('form is submitted');
+    signUpUser();
+  };
   return (
     <div style={{ display: 'flex' }}>
       {/* app bar */}
@@ -327,7 +327,7 @@ const Layout = ({ children }) => {
             aria-labelledby='modal-modal-title'
             aria-describedby='modal-modal-description'
           >
-            <Box sx={style}>
+            <Box sx={style} component='form' onSubmit={handleSubmit}>
               <Typography variant='h5' fontWeight='bold'>
                 Sign Up
               </Typography>
@@ -338,8 +338,7 @@ const Layout = ({ children }) => {
                 color='secondary'
                 fullWidth
                 required
-                error={errorMessage}
-                helperText={errorMessage ? 'This Field Is Required' : null}
+                helperText='This Field Is Required'
                 id='signUp-name'
                 sx={{
                   marginTop: '20px',
@@ -417,7 +416,7 @@ const Layout = ({ children }) => {
               />
 
               <Button
-                onClick={signUpUser}
+                type='submit'
                 variant='contained'
                 fullWidth
                 color='success'

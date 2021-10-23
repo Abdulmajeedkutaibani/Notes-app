@@ -19,32 +19,28 @@ import { Link } from 'react-router-dom';
 
 export default function Notes() {
   const auth = getAuth();
-  const [notes, setNotes] = useState([]);
-  const [noteId, setNoteID] = useState('');
+  const [userUID, setUserUID] = useState(null);
   const [addNoteDisplay, setaddNoteDisplay] = useState('none');
+  const [notes, setNotes] = useState([]);
   const [loginMessageDisplay, setLoginMessageDisplay] = useState('none');
   const getUserNotes = () => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
+        setUserUID(auth.currentUser.uid);
         setLoginMessageDisplay('none');
-        setNoteID(auth.currentUser.uid);
+
         onSnapshot(collection(db, 'notes'), (snapshot) => {
-          return setNotes(
-            snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id }))
-          );
+          setNotes(snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
         });
-        console.log(auth.currentUser.email + ' logged in');
+        console.log(user.email + ' logged in');
         setaddNoteDisplay('flex');
         // ...
       } else {
-        setNoteID('');
-        setLoginMessageDisplay('block');
-
-        console.log('User logged out');
         setaddNoteDisplay('none');
-        return setNotes([]);
-        // User is signed out
-        // ...
+        setLoginMessageDisplay('block');
+        setNotes([]);
+        console.log('User logged out');
+        setUserUID(null);
       }
     });
   };
@@ -71,17 +67,19 @@ export default function Notes() {
         className='my-masonry-grid'
         columnClassName='my-masonry-grid_column'
       >
-        {notes
-          .filter((note) => note.userId === auth.currentUser.uid)
-          .map((note) => (
-            <div key={noteId}>
-              <NoteCard
-                note={note}
-                handleDelete={handleDelete}
-                currentUserId={auth.currentUser.uid}
-              />
-            </div>
-          ))}
+        {userUID
+          ? notes
+              .filter((note) => note.userId === userUID)
+              .map((note) => (
+                <div key={userUID}>
+                  <NoteCard
+                    note={note}
+                    handleDelete={handleDelete}
+                    currentUserId={userUID}
+                  />
+                </div>
+              ))
+          : null}
         <Typography
           variant='h4'
           fontWeight='bold'
