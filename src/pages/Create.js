@@ -51,6 +51,21 @@ export default function Create() {
   };
   return (
     <Container>
+      <Button
+        onClick={() => {
+          history.push('/');
+        }}
+        variant='contained'
+        fullWidth
+        sx={{
+          display: { xs: 'block', sm: 'none' },
+          background: 'gold',
+          color: 'black',
+          marginBottom: 2,
+        }}
+      >
+        Back To Notes
+      </Button>
       <Typography
         color='textSecondary'
         variant='h6'

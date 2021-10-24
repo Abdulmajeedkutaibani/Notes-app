@@ -16,8 +16,8 @@ import {
   Input,
   InputAdornment,
   Grid,
-  Hidden,
 } from '@mui/material';
+
 import {
   AccountCircle,
   AddCircleOutlined,
@@ -59,7 +59,7 @@ const style = {
   transform: 'translate(-50%, -50%)',
   maxWidth: 400,
   width: 300,
-  minWidth: 200,
+  minWidth: 100,
   bgcolor: 'background.paper',
   border: '2px solid #000',
   borderRadius: '8px',
@@ -202,6 +202,7 @@ const Layout = ({ children }) => {
       });
   };
   const SignOutUser = () => {
+    history.push('/');
     auth.signOut().catch((error) => {
       console.log(error.message);
     });
@@ -212,6 +213,7 @@ const Layout = ({ children }) => {
     console.log('form is submitted');
     signUpUser();
   };
+
   return (
     <div style={{ display: 'flex' }}>
       {/* app bar */}
@@ -222,9 +224,25 @@ const Layout = ({ children }) => {
           width: { sm: `calc(100% - ${drawerWidth}px)`, xs: '100%' },
         }}
       >
-        <Toolbar>
-          <Typography sx={{ flexGrow: 1 }}>
+        <Toolbar
+          sx={{
+            xs: {
+              display: 'flex',
+              flexDirection: 'column',
+              background: 'teal',
+            },
+            sm: { display: 'block', background: 'white' },
+          }}
+        >
+          <Typography
+            sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}
+          >
             Today is the {format(new Date(), 'do MMMM Y')}
+          </Typography>
+          <Typography
+            sx={{ display: { xs: 'block', sm: 'none' }, flexGrow: 1 }}
+          >
+            {format(new Date(), 'do MMMM Y')}
           </Typography>
 
           <Button
@@ -235,8 +253,13 @@ const Layout = ({ children }) => {
             Login
           </Button>
           <Button
-            color='inherit'
-            sx={{ display: userLinks }}
+            variant='outlined'
+            color='success'
+            sx={{
+              display: userLinks,
+              xs: { marginRight: 1, paddingRight: 3 },
+              sm: { marginRight: 0, paddingRight: 0 },
+            }}
             onClick={handleAccountOpen}
           >
             Account
@@ -249,9 +272,13 @@ const Layout = ({ children }) => {
             Sign Up
           </Button>
           <Button
-            color='inherit'
+            variant='outlined'
+            color='error'
             onClick={SignOutUser}
-            sx={{ display: userLinks }}
+            sx={{
+              display: userLinks,
+              marginLeft: 1,
+            }}
           >
             Logout
           </Button>
@@ -544,6 +571,7 @@ const Layout = ({ children }) => {
       </Drawer>
       <div style={classes.page}>
         <div style={theme.mixins.toolbar}></div>
+
         {children}
       </div>
     </div>

@@ -1,14 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Avatar,
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  Container,
-  IconButton,
-  Typography,
-} from '@mui/material';
+import { Button, Container, Typography } from '@mui/material';
 import NoteCard from '../Components/NoteCard';
 import Masonry from 'react-masonry-css';
 import db from '../firebase';
