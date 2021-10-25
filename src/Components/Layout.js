@@ -16,6 +16,7 @@ import {
   Input,
   InputAdornment,
   Grid,
+  Box,
 } from '@mui/material';
 
 import {
@@ -27,12 +28,15 @@ import {
 } from '@mui/icons-material';
 import { useHistory, useLocation } from 'react-router';
 import { format } from 'date-fns';
-import { Box } from '@mui/system';
 import {
   getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   onAuthStateChanged,
+  deleteUser,
+  reauthenticateWithCredential,
+  EmailAuthProvider,
+  reauthenticateWithPopup,
 } from 'firebase/auth';
 import db from '../firebase';
 import { onSnapshot, doc, setDoc } from '@firebase/firestore';
@@ -58,13 +62,27 @@ const style = {
   left: '50%',
   transform: 'translate(-50%, -50%)',
   maxWidth: 400,
-  width: 300,
+  width: '50%',
   minWidth: 100,
   bgcolor: 'background.paper',
   border: '2px solid #000',
   borderRadius: '8px',
   boxShadow: 24,
   p: 4,
+};
+const style2 = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  maxWidth: 600,
+  width: '50%',
+  minWidth: 100,
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  borderRadius: '8px',
+  boxShadow: 24,
+  p: 2,
 };
 
 const Layout = ({ children }) => {
@@ -75,10 +93,13 @@ const Layout = ({ children }) => {
   const handleLoginClose = () => setOpenLogin(false);
   const [openSignUP, setOpenSignUP] = useState(false);
   const [openAccount, setOpenAccount] = useState(false);
+  const [openDeleteAccount, setOpenDeleteAccount] = useState(false);
   const handleSignUpOpen = () => setOpenSignUP(true);
   const handleSignUpClose = () => setOpenSignUP(false);
   const handleAccountOpen = () => setOpenAccount(true);
   const handleAccountClose = () => setOpenAccount(false);
+  const handleDeleteAccountOpen = () => setOpenDeleteAccount(true);
+  const handleDeleteAccountClose = () => setOpenDeleteAccount(false);
   const [signUpName, setSignUpName] = useState('Not Set');
   const [signUpEmail, setSignUpEmail] = useState();
   const [signUpPassword, setSignUpPassword] = useState();
@@ -88,13 +109,17 @@ const Layout = ({ children }) => {
   const [guestLinks, setGuestLinks] = useState('none');
   const [userLinks, setUserLinks] = useState('none');
   const [accountInfo, setAccountInfo] = useState();
-  const [profilePhoto, setProfilePhoto] = useState();
+  const [profilePhoto, setProfilePhoto] = useState(null);
   const [imageUrl, setImageUrl] = useState();
   const [errorMessage, setErrorMessage] = useState(false);
+  const [loginMessageDisplay, setLoginMessageDisplay] = useState('none');
+  const [notesRendering, setNotesRendering] = useState();
 
   // Get a reference to the storage service, which is used to create references in your storage bucket
   onAuthStateChanged(auth, (user) => {
     if (user) {
+      setNotesRendering(children);
+      setLoginMessageDisplay('none');
       setUserLinks('block');
       setGuestLinks('none');
       setAccountInfo(user.email);
@@ -111,6 +136,7 @@ const Layout = ({ children }) => {
           console.log(err.message);
         });
     } else {
+      setLoginMessageDisplay('block');
       setUserLinks('none');
       setGuestLinks('block');
       setAccountInfo('');
@@ -121,22 +147,26 @@ const Layout = ({ children }) => {
   // Create a storage reference
   const uploadImage = () => {
     const auth = getAuth();
-    const imagesRef = ref(storage, `PhotoCollection/${auth.currentUser.uid}`);
-    uploadBytes(imagesRef, profilePhoto).then((snapshot) => {
-      console.log('Uploaded a blob or file!');
-    });
+    if (auth.currentUser) {
+      const imagesRef = ref(storage, `PhotoCollection/${auth.currentUser.uid}`);
+      uploadBytes(imagesRef, profilePhoto).then((snapshot) => {
+        console.log('Uploaded a blob or file!');
+      });
+    }
   };
 
   useEffect(() => {
     if (profilePhoto) {
       uploadImage();
       setOpenAccount(false);
-      getDownloadURL(
-        ref(storage, `PhotoCollection/${auth.currentUser.uid}`)
-      ).then((url) => {
-        setImageUrl(url);
-      });
-    }
+      getDownloadURL(ref(storage, `PhotoCollection/${auth.currentUser.uid}`))
+        .then((url) => {
+          setImageUrl(url);
+        })
+        .catch((error) => {
+          console.log(error.message);
+        });
+    } else console.log('no picture uploaded');
   }, [profilePhoto]);
 
   const theme = useTheme();
@@ -202,10 +232,27 @@ const Layout = ({ children }) => {
       });
   };
   const SignOutUser = () => {
-    history.push('/');
+    setNotesRendering(null);
     auth.signOut().catch((error) => {
       console.log(error.message);
     });
+
+    history.push('/');
+  };
+
+  const handleUserDelete = () => {
+    const auth = getAuth();
+    const user = auth.currentUser;
+
+    deleteUser(user)
+      .then(() => {
+        console.log('User Deleted');
+        history.push('/');
+        setOpenAccount(false);
+      })
+      .catch((error) => {
+        setOpenDeleteAccount(true);
+      });
   };
 
   const handleSubmit = (e) => {
@@ -463,37 +510,27 @@ const Layout = ({ children }) => {
             <Box sx={style}>
               <Grid container spacing={2}>
                 <Grid item xs={12}>
-                  <Typography
-                    id='modal-modal-title'
-                    variant='h6'
-                    component='h2'
-                  >
+                  <Typography id='modal-modal-title' variant='h5'>
                     Logged in as:
-                    <Typography variant='h6' component='h2' color='green'>
+                    <br />
+                    <Typography variant='h6' color='green' component='span'>
                       {signUpName}
                     </Typography>
                   </Typography>
                 </Grid>
                 <Grid item xs={12} sx={{ mx: 'auto' }}>
-                  <Typography
-                    id='modal-modal-title'
-                    variant='h6'
-                    component='h2'
-                  >
-                    User Email:
-                    <Typography variant='h6' component='h2' color='teal'>
+                  <Typography id='modal-modal-title' variant='h5'>
+                    User Email: <br />
+                    <Typography variant='h6' color='teal' component='span'>
                       {accountInfo}
                     </Typography>
                   </Typography>
                 </Grid>
                 <Grid item xs={12}>
-                  <Typography
-                    id='modal-modal-title'
-                    variant='h6'
-                    component='h2'
-                  >
+                  <Typography id='modal-modal-title' variant='h5'>
                     Bio:
-                    <Typography variant='h6' component='h2' color='red'>
+                    <br />
+                    <Typography variant='h6' color='red' component='span'>
                       {signUpBio}
                     </Typography>
                   </Typography>
@@ -525,12 +562,56 @@ const Layout = ({ children }) => {
                     </Button>
                   </label>
                 </Grid>
+                <Grid item sx={{ width: '100%' }}>
+                  <Button
+                    fullWidth
+                    variant='contained'
+                    color='error'
+                    onClick={handleUserDelete}
+                  >
+                    Delete Account
+                  </Button>
+                </Grid>
               </Grid>
             </Box>
           </Modal>
+          {/* Delete Account Modal */}
+          <Modal
+            open={openDeleteAccount}
+            onClose={handleDeleteAccountClose}
+            aria-labelledby='modal-modal-title'
+            aria-describedby='modal-modal-description'
+          >
+            <Box sx={style2}>
+              <Typography
+                variant='h5'
+                color='red'
+                component='span'
+                sx={{ fontWeight: 'bold' }}
+              >
+                Invalid command: if you want to delete your account then please
+                do this step immediatly after you login
+              </Typography>
+              <br />
+              <br />
+              <Typography variant='h6' color='blue' component='span'>
+                Instructions: Logout of the current Account{' '}
+                <Typography variant='h6' color='teal' component='span'>
+                  {accountInfo}
+                </Typography>
+                , then Login again using the same Account,Then immediatly open
+                the Account page and then click
+                <Typography variant='h6' color='red' component='span'>
+                  {' '}
+                  DELETE ACCOUNT{' '}
+                </Typography>
+                and your account will be deleted permanently.
+              </Typography>
+            </Box>
+          </Modal>
+          {/* side drawer */}
         </Toolbar>
       </AppBar>
-      {/* side drawer */}
       <Drawer
         sx={{
           width: drawerWidth,
@@ -571,8 +652,14 @@ const Layout = ({ children }) => {
       </Drawer>
       <div style={classes.page}>
         <div style={theme.mixins.toolbar}></div>
-
-        {children}
+        {notesRendering}
+        <Typography
+          variant='h4'
+          fontWeight='bold'
+          sx={{ display: loginMessageDisplay }}
+        >
+          Please Log In To Create And View Notes
+        </Typography>
       </div>
     </div>
   );

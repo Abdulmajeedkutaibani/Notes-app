@@ -13,12 +13,10 @@ export default function Notes() {
   const [userUID, setUserUID] = useState(null);
   const [addNoteDisplay, setaddNoteDisplay] = useState('none');
   const [notes, setNotes] = useState([]);
-  const [loginMessageDisplay, setLoginMessageDisplay] = useState('none');
   const getUserNotes = () => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
         setUserUID(auth.currentUser.uid);
-        setLoginMessageDisplay('none');
 
         onSnapshot(collection(db, 'notes'), (snapshot) => {
           setNotes(snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
@@ -28,7 +26,6 @@ export default function Notes() {
         // ...
       } else {
         setaddNoteDisplay('none');
-        setLoginMessageDisplay('block');
         setNotes([]);
         console.log('User logged out');
         setUserUID(null);
@@ -95,13 +92,6 @@ export default function Notes() {
           </Link>
         </Button>
       </Masonry>
-      <Typography
-        variant='h4'
-        fontWeight='bold'
-        sx={{ display: loginMessageDisplay }}
-      >
-        Please Log In To View And Create Notes
-      </Typography>
     </Container>
   );
 }
