@@ -86,9 +86,13 @@ const style2 = {
 };
 
 const schema = yup.object().shape({
-  name: yup.string().required(),
-  email: yup.string().email().required(),
-  password: yup.string().min(7).max(15).required(),
+  loginEmail: yup.string().email().required(),
+  loginPassword: yup.string().min(7).max(15).required(),
+});
+const schema2 = yup.object().shape({
+  signupName: yup.string().required(),
+  signupEmail: yup.string().email().required(),
+  signupPassword: yup.string().min(7).max(15).required(),
   bio: yup.string().required(),
 });
 
@@ -130,6 +134,14 @@ const Layout = ({ children }) => {
     reset,
   } = useForm({
     resolver: yupResolver(schema),
+  });
+  const {
+    register: register2,
+    handleSubmit: handleSubmit2,
+    formState: { errors: errors2 },
+    reset: reset2,
+  } = useForm({
+    resolver: yupResolver(schema2),
   });
 
   // Get a reference to the storage service, which is used to create references in your storage bucket
@@ -185,7 +197,9 @@ const Layout = ({ children }) => {
         });
     } else console.log('no picture uploaded');
   }, [profilePhoto]);
-
+  useEffect(() => {
+    reset();
+  }, []);
   const theme = useTheme();
   const classes = {
     page: {
@@ -198,9 +212,9 @@ const Layout = ({ children }) => {
   const location = useLocation();
 
   const signUpUser = (data) => {
-    const name = data.name;
-    const email = data.email;
-    const password = data.password;
+    const name = data.signupName;
+    const email = data.signupEmail;
+    const password = data.signupPassword;
     const bio = data.bio;
     const auth = getAuth();
 
@@ -220,7 +234,7 @@ const Layout = ({ children }) => {
         });
         setOpenSignUP(false);
         setSignupErrorMessage();
-        reset();
+        reset2();
 
         // ...
       })
@@ -233,16 +247,16 @@ const Layout = ({ children }) => {
       });
   };
 
-  const signInUser = (data) => {
-    const email = data.email;
-    const password = data.password;
+  const signInUser = (signInData) => {
+    const email = signInData.loginEmail;
+    const password = signInData.loginPassword;
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // Signed in
         setLoginErrorMessage();
         setOpenLogin(false);
-        // ...
         reset();
+        // ...
       })
       .catch((error) => {
         setLoginErrorMessage(
@@ -352,6 +366,7 @@ const Layout = ({ children }) => {
             aria-describedby='modal-modal-description'
           >
             <Box
+              key={1}
               sx={style}
               component='form'
               noValidate
@@ -361,14 +376,16 @@ const Layout = ({ children }) => {
                 {loginErrorMessage}
               </Typography>
               <TextField
-                {...register('email')}
+                {...register('loginEmail')}
                 label='Email'
                 variant='outlined'
                 color='secondary'
                 fullWidth
                 required
-                error={errors.email ? true : false}
-                helperText={errors.email ? 'please enter a valid Email' : null}
+                error={errors.loginEmail ? true : false}
+                helperText={
+                  errors.loginEmail ? 'please enter a valid Email' : null
+                }
                 type='email'
                 id='login-email'
                 sx={{
@@ -385,14 +402,14 @@ const Layout = ({ children }) => {
                 }}
               />
               <TextField
-                {...register('password')}
+                {...register('loginPassword')}
                 label='Password'
                 variant='outlined'
                 color='secondary'
                 fullWidth
-                error={errors.password ? true : false}
+                error={errors.loginPassword ? true : false}
                 helperText={
-                  errors.password
+                  errors.loginPassword
                     ? 'Password must contain 8 to 15 characters'
                     : null
                 }
@@ -429,9 +446,10 @@ const Layout = ({ children }) => {
             aria-describedby='modal-modal-description'
           >
             <Box
+              key={2}
               sx={style}
               component='form'
-              onSubmit={handleSubmit(signUpUser)}
+              onSubmit={handleSubmit2(signUpUser)}
             >
               <Typography variant='h5' fontWeight='bold'>
                 Sign Up
@@ -441,13 +459,15 @@ const Layout = ({ children }) => {
                 {signupErrorMessage}
               </Typography>
               <TextField
-                {...register('name')}
+                {...register2('signupName')}
                 label='Name'
                 variant='outlined'
                 color='secondary'
                 fullWidth
-                error={errors.name ? true : false}
-                helperText={errors.name ? `This field can't be empty` : null}
+                error={errors2.signupName ? true : false}
+                helperText={
+                  errors2.signupName ? `This field can't be empty` : null
+                }
                 id='signUp-name'
                 sx={{
                   marginTop: '20px',
@@ -463,14 +483,16 @@ const Layout = ({ children }) => {
                 }}
               />
               <TextField
-                {...register('email')}
+                {...register2('signupEmail')}
                 label='Email'
                 variant='outlined'
                 color='secondary'
                 fullWidth
                 required
-                error={errors.email ? true : false}
-                helperText={errors.email ? 'please enter a valid Email' : null}
+                error={errors2.signupEmail ? true : false}
+                helperText={
+                  errors2.signupEmail ? 'please enter a valid Email' : null
+                }
                 type='email'
                 id='signUp-email'
                 sx={{
@@ -487,14 +509,14 @@ const Layout = ({ children }) => {
                 }}
               />
               <TextField
-                {...register('password')}
+                {...register2('signupPassword')}
                 label='Password'
                 variant='outlined'
                 color='secondary'
                 fullWidth
-                error={errors.password ? true : false}
+                error={errors2.signupPassword ? true : false}
                 helperText={
-                  errors.password
+                  errors2.signupPassword
                     ? 'Password must contain 8 to 15 characters'
                     : null
                 }
@@ -514,13 +536,13 @@ const Layout = ({ children }) => {
                 }}
               />
               <TextField
-                {...register('bio')}
+                {...register2('bio')}
                 label='bio'
                 variant='outlined'
                 color='secondary'
                 fullWidth
-                error={errors.bio ? true : false}
-                helperText={errors.bio ? `This field can't be empty` : null}
+                error={errors2.bio ? true : false}
+                helperText={errors2.bio ? `This field can't be empty` : null}
                 multiline
                 rows={4}
                 id='signUp-bio'
