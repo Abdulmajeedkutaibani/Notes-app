@@ -86,8 +86,10 @@ const style2 = {
 };
 
 const schema = yup.object().shape({
+  name: yup.string().required(),
   email: yup.string().email().required(),
   password: yup.string().min(7).max(15).required(),
+  bio: yup.string().required(),
 });
 
 const Layout = ({ children }) => {
@@ -117,6 +119,7 @@ const Layout = ({ children }) => {
   const [profilePhoto, setProfilePhoto] = useState(null);
   const [imageUrl, setImageUrl] = useState();
   const [loginErrorMessage, setLoginErrorMessage] = useState();
+  const [signupErrorMessage, setSignupErrorMessage] = useState();
   const [loginMessageDisplay, setLoginMessageDisplay] = useState('none');
   const [notesRendering, setNotesRendering] = useState();
 
@@ -194,11 +197,11 @@ const Layout = ({ children }) => {
   const history = useHistory();
   const location = useLocation();
 
-  const signUpUser = async () => {
-    const email = signUpEmail;
-    const password = signUpPassword;
-    const bio = signUpBio;
-    const name = signUpName;
+  const signUpUser = (data) => {
+    const name = data.name;
+    const email = data.email;
+    const password = data.password;
+    const bio = data.bio;
     const auth = getAuth();
 
     createUserWithEmailAndPassword(auth, email, password)
@@ -216,12 +219,15 @@ const Layout = ({ children }) => {
           setSignUpBio(doc.data().bio);
         });
         setOpenSignUP(false);
+        setSignupErrorMessage();
+        reset();
 
         // ...
       })
       .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error.message;
+        setSignupErrorMessage(
+          `This user Email is already taken. Try Signing up with another Email.`
+        );
 
         // ..
       });
@@ -236,13 +242,13 @@ const Layout = ({ children }) => {
         setLoginErrorMessage();
         setOpenLogin(false);
         // ...
+        reset();
       })
       .catch((error) => {
         setLoginErrorMessage(
           `Login Error. Make sure you entered the Email and Password correctly and that you're Signed Up.`
         );
       });
-    reset();
   };
   const SignOutUser = () => {
     setNotesRendering(null);
@@ -266,12 +272,6 @@ const Layout = ({ children }) => {
       .catch((error) => {
         setOpenDeleteAccount(true);
       });
-  };
-
-  const handleSignUpSubmit = (e) => {
-    e.preventDefault();
-    console.log('form is submitted');
-    signUpUser();
   };
 
   return (
@@ -368,7 +368,7 @@ const Layout = ({ children }) => {
                 fullWidth
                 required
                 error={errors.email ? true : false}
-                helperText={errors.email ? 'please enter a valid email' : null}
+                helperText={errors.email ? 'please enter a valid Email' : null}
                 type='email'
                 id='login-email'
                 sx={{
@@ -390,7 +390,6 @@ const Layout = ({ children }) => {
                 variant='outlined'
                 color='secondary'
                 fullWidth
-                required
                 error={errors.password ? true : false}
                 helperText={
                   errors.password
@@ -429,18 +428,26 @@ const Layout = ({ children }) => {
             aria-labelledby='modal-modal-title'
             aria-describedby='modal-modal-description'
           >
-            <Box sx={style} component='form' onSubmit={handleSignUpSubmit}>
+            <Box
+              sx={style}
+              component='form'
+              onSubmit={handleSubmit(signUpUser)}
+            >
               <Typography variant='h5' fontWeight='bold'>
                 Sign Up
               </Typography>
+              <br />
+              <Typography color='error' sx={{ fontWeight: 'bold' }}>
+                {signupErrorMessage}
+              </Typography>
               <TextField
-                onChange={(e) => setSignUpName(e.target.value)}
+                {...register('name')}
                 label='Name'
                 variant='outlined'
                 color='secondary'
                 fullWidth
-                required
-                helperText='This Field Is Required'
+                error={errors.name ? true : false}
+                helperText={errors.name ? `This field can't be empty` : null}
                 id='signUp-name'
                 sx={{
                   marginTop: '20px',
@@ -456,14 +463,15 @@ const Layout = ({ children }) => {
                 }}
               />
               <TextField
-                onChange={(e) => setSignUpEmail(e.target.value)}
+                {...register('email')}
                 label='Email'
                 variant='outlined'
                 color='secondary'
                 fullWidth
                 required
+                error={errors.email ? true : false}
+                helperText={errors.email ? 'please enter a valid Email' : null}
                 type='email'
-                helperText='Please enter a valid Email'
                 id='signUp-email'
                 sx={{
                   marginTop: '20px',
@@ -479,12 +487,17 @@ const Layout = ({ children }) => {
                 }}
               />
               <TextField
-                onChange={(e) => setSignUpPassword(e.target.value)}
+                {...register('password')}
                 label='Password'
                 variant='outlined'
                 color='secondary'
                 fullWidth
-                required
+                error={errors.password ? true : false}
+                helperText={
+                  errors.password
+                    ? 'Password must contain 8 to 15 characters'
+                    : null
+                }
                 type='password'
                 id='signUp-password'
                 sx={{
@@ -501,12 +514,13 @@ const Layout = ({ children }) => {
                 }}
               />
               <TextField
-                onChange={(e) => setSignUpBio(e.target.value)}
+                {...register('bio')}
                 label='bio'
                 variant='outlined'
                 color='secondary'
                 fullWidth
-                required
+                error={errors.bio ? true : false}
+                helperText={errors.bio ? `This field can't be empty` : null}
                 multiline
                 rows={4}
                 id='signUp-bio'
