@@ -34,13 +34,13 @@ import {
   signInWithEmailAndPassword,
   onAuthStateChanged,
   deleteUser,
-  reauthenticateWithCredential,
-  EmailAuthProvider,
-  reauthenticateWithPopup,
 } from 'firebase/auth';
 import db from '../firebase';
 import { onSnapshot, doc, setDoc } from '@firebase/firestore';
 import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { useForm } from 'react-hook-form';
+import * as yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
 
 const drawerWidth = 240;
 
@@ -85,6 +85,11 @@ const style2 = {
   p: 2,
 };
 
+const schema = yup.object().shape({
+  email: yup.string().email().required(),
+  password: yup.string().min(7).max(15).required(),
+});
+
 const Layout = ({ children }) => {
   const auth = getAuth();
   const storage = getStorage();
@@ -111,9 +116,18 @@ const Layout = ({ children }) => {
   const [accountInfo, setAccountInfo] = useState();
   const [profilePhoto, setProfilePhoto] = useState(null);
   const [imageUrl, setImageUrl] = useState();
-  const [errorMessage, setErrorMessage] = useState(false);
+  const [loginErrorMessage, setLoginErrorMessage] = useState();
   const [loginMessageDisplay, setLoginMessageDisplay] = useState('none');
   const [notesRendering, setNotesRendering] = useState();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm({
+    resolver: yupResolver(schema),
+  });
 
   // Get a reference to the storage service, which is used to create references in your storage bucket
   onAuthStateChanged(auth, (user) => {
@@ -208,28 +222,27 @@ const Layout = ({ children }) => {
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
-        setErrorMessage(true);
 
         // ..
       });
   };
 
-  const signInUser = () => {
-    const email = loginEmail;
-    const password = loginPassword;
+  const signInUser = (data) => {
+    const email = data.email;
+    const password = data.password;
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // Signed in
-        const user = userCredential.user.email;
+        setLoginErrorMessage();
         setOpenLogin(false);
         // ...
       })
       .catch((error) => {
-        const errorCode = error.code;
-        const errorMessage = error;
-        console.log('please enter correct sign in info');
-        setErrorMessage(true);
+        setLoginErrorMessage(
+          `Login Error. Make sure you entered the Email and Password correctly and that you're Signed Up.`
+        );
       });
+    reset();
   };
   const SignOutUser = () => {
     setNotesRendering(null);
@@ -255,7 +268,7 @@ const Layout = ({ children }) => {
       });
   };
 
-  const handleSubmit = (e) => {
+  const handleSignUpSubmit = (e) => {
     e.preventDefault();
     console.log('form is submitted');
     signUpUser();
@@ -338,14 +351,24 @@ const Layout = ({ children }) => {
             aria-labelledby='modal-modal-title'
             aria-describedby='modal-modal-description'
           >
-            <Box sx={style} component='form' noValidate>
+            <Box
+              sx={style}
+              component='form'
+              noValidate
+              onSubmit={handleSubmit(signInUser)}
+            >
+              <Typography color='error' sx={{ fontWeight: 'bold' }}>
+                {loginErrorMessage}
+              </Typography>
               <TextField
-                onChange={(e) => setLoginEmail(e.target.value)}
+                {...register('email')}
                 label='Email'
                 variant='outlined'
                 color='secondary'
                 fullWidth
                 required
+                error={errors.email ? true : false}
+                helperText={errors.email ? 'please enter a valid email' : null}
                 type='email'
                 id='login-email'
                 sx={{
@@ -362,16 +385,20 @@ const Layout = ({ children }) => {
                 }}
               />
               <TextField
-                onChange={(e) => setLoginPassword(e.target.value)}
+                {...register('password')}
                 label='Password'
                 variant='outlined'
                 color='secondary'
                 fullWidth
                 required
+                error={errors.password ? true : false}
+                helperText={
+                  errors.password
+                    ? 'Password must contain 8 to 15 characters'
+                    : null
+                }
                 type='password'
                 id='login-password'
-                error={errorMessage}
-                helperText={errorMessage ? 'Unable To Sign In' : null}
                 sx={{
                   marginTop: '20px',
                   marginBottom: '20px',
@@ -386,7 +413,7 @@ const Layout = ({ children }) => {
                 }}
               />
               <Button
-                onClick={signInUser}
+                type='submit'
                 color='primary'
                 variant='contained'
                 sx={{ width: '100%' }}
@@ -402,7 +429,7 @@ const Layout = ({ children }) => {
             aria-labelledby='modal-modal-title'
             aria-describedby='modal-modal-description'
           >
-            <Box sx={style} component='form' onSubmit={handleSubmit}>
+            <Box sx={style} component='form' onSubmit={handleSignUpSubmit}>
               <Typography variant='h5' fontWeight='bold'>
                 Sign Up
               </Typography>
