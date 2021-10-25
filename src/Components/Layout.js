@@ -112,11 +112,7 @@ const Layout = ({ children }) => {
   const handleDeleteAccountOpen = () => setOpenDeleteAccount(true);
   const handleDeleteAccountClose = () => setOpenDeleteAccount(false);
   const [signUpName, setSignUpName] = useState('Not Set');
-  const [signUpEmail, setSignUpEmail] = useState();
-  const [signUpPassword, setSignUpPassword] = useState();
   const [signUpBio, setSignUpBio] = useState();
-  const [loginEmail, setLoginEmail] = useState();
-  const [loginPassword, setLoginPassword] = useState();
   const [guestLinks, setGuestLinks] = useState('none');
   const [userLinks, setUserLinks] = useState('none');
   const [accountInfo, setAccountInfo] = useState();
@@ -197,9 +193,7 @@ const Layout = ({ children }) => {
         });
     } else console.log('no picture uploaded');
   }, [profilePhoto]);
-  useEffect(() => {
-    reset();
-  }, []);
+
   const theme = useTheme();
   const classes = {
     page: {
