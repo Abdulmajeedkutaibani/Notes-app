@@ -4,6 +4,8 @@ import Create from './pages/Create';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { purple } from '@mui/material/colors';
 import Layout from './Components/Layout';
+import { Typography } from '@mui/material';
+import { Footer } from './Components/Footer';
 
 const theme = createTheme({
   typography: {
@@ -32,6 +34,7 @@ function App() {
             </Route>
           </Switch>
         </Layout>
+        <Footer />
       </Router>
     </ThemeProvider>
   );

@@ -285,7 +285,7 @@ const Layout = ({ children }) => {
   };
 
   return (
-    <div style={{ display: 'flex' }}>
+    <Box sx={{ display: 'flex' }}>
       {/* app bar */}
       <AppBar
         color='inherit'
@@ -686,16 +686,29 @@ const Layout = ({ children }) => {
           '& .MuiDrawer-paper': {
             width: drawerWidth,
           },
-          display: { xs: 'none', sm: 'block' },
+          display: { xs: 'none', sm: 'flex' },
         }}
         variant='permanent'
         anchor='left'
       >
-        <div>
-          <Typography variant='h5' sx={{ padding: 2 }}>
-            AK Notes
+        <Box
+          sx={{ marginBottom: 'auto', padding: 2, cursor: 'pointer' }}
+          onClick={() => {
+            history.push('/');
+          }}
+        >
+          <Typography
+            variant='h4'
+            component='span'
+            sx={{ fontWeight: 'bold' }}
+            color='primary'
+          >
+            AK
+          </Typography>{' '}
+          <Typography variant='h4' component='span'>
+            Notes
           </Typography>
-        </div>
+        </Box>
         {/* list / links */}
         <List sx={{ display: userLinks, flexGrow: '1' }}>
           {menuItems.map((item) => (
@@ -725,11 +738,11 @@ const Layout = ({ children }) => {
             fontWeight: 'bold',
           }}
         >
-          © 2021 Abdulmajeed Kutaibani
+          © 2021 Abdulmajeed Kutaibani <br /> abodymeo@gmail.com
         </Typography>
       </Drawer>
-      <div style={classes.page}>
-        <div style={theme.mixins.toolbar}></div>
+      <Box sx={classes.page}>
+        <Box sx={theme.mixins.toolbar}></Box>
         {notesRendering}
         <Typography
           variant='h4'
@@ -738,8 +751,8 @@ const Layout = ({ children }) => {
         >
           Please Log In To Create And View Notes
         </Typography>
-      </div>
-    </div>
+      </Box>
+    </Box>
   );
 };
 
