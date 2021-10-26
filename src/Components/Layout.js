@@ -41,6 +41,7 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { display } from '@mui/system';
 
 const drawerWidth = 240;
 
@@ -122,6 +123,7 @@ const Layout = ({ children }) => {
   const [signupErrorMessage, setSignupErrorMessage] = useState();
   const [loginMessageDisplay, setLoginMessageDisplay] = useState('none');
   const [notesRendering, setNotesRendering] = useState();
+  const [accountBtnDisplay, setAccountBtnDisplay] = useState('block');
 
   const {
     register,
@@ -314,9 +316,10 @@ const Layout = ({ children }) => {
           </Typography>
 
           <Button
-            color='inherit'
+            variant='contained'
+            color='primary'
             onClick={handleLoginOpen}
-            sx={{ display: guestLinks }}
+            sx={{ display: guestLinks, marginRight: '10px' }}
           >
             Login
           </Button>
@@ -324,16 +327,16 @@ const Layout = ({ children }) => {
             variant='outlined'
             color='success'
             sx={{
-              display: userLinks,
-              xs: { marginRight: 1, paddingRight: 3 },
-              sm: { marginRight: 0, paddingRight: 0 },
+              display: { xs: 'none', sm: userLinks },
             }}
             onClick={handleAccountOpen}
+            // { xs: 'none', sm: 'block' }
           >
             Account
           </Button>
           <Button
-            color='inherit'
+            variant='outlined'
+            color='success'
             onClick={handleSignUpOpen}
             sx={{ display: guestLinks }}
           >
@@ -350,7 +353,15 @@ const Layout = ({ children }) => {
           >
             Logout
           </Button>
-          <Avatar src={imageUrl} sx={{ marginLeft: theme.spacing(2) }} />
+          <Avatar
+            src={imageUrl}
+            sx={{
+              marginLeft: theme.spacing(2),
+              display: userLinks,
+              cursor: 'pointer',
+            }}
+            onClick={handleAccountOpen}
+          />
 
           {/* Login modal */}
           <Modal
