@@ -696,9 +696,8 @@ const Layout = ({ children }) => {
             AK Notes
           </Typography>
         </div>
-
         {/* list / links */}
-        <List sx={{ display: userLinks }}>
+        <List sx={{ display: userLinks, flexGrow: '1' }}>
           {menuItems.map((item) => (
             <ListItem
               key={item.Text}
@@ -717,6 +716,17 @@ const Layout = ({ children }) => {
             </ListItem>
           ))}
         </List>
+        <Typography
+          variant='subtitle2'
+          sx={{
+            padding: 2,
+            background: '#003366',
+            color: 'white',
+            fontWeight: 'bold',
+          }}
+        >
+          © 2021 Abdulmajeed Kutaibani
+        </Typography>
       </Drawer>
       <div style={classes.page}>
         <div style={theme.mixins.toolbar}></div>
