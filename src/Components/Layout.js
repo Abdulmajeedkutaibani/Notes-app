@@ -277,7 +277,13 @@ const Layout = ({ children }) => {
   };
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' } }}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: { xs: 'column', sm: 'row' },
+        overflow: 'hidden',
+      }}
+    >
       {/* app bar */}
       <Header />
       <AppBar
