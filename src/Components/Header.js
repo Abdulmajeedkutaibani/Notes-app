@@ -1,11 +1,10 @@
 import { Typography } from '@mui/material';
 import { Box } from '@mui/system';
 import React from 'react';
-import { useHistory, useLocation } from 'react-router';
+import { useHistory } from 'react-router';
 
 export const Header = () => {
   const history = useHistory();
-  const location = useLocation();
   return (
     <Box
       id='logo-mobile'

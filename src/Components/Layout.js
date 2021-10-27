@@ -110,7 +110,6 @@ const Layout = ({ children }) => {
   const handleSignUpClose = () => setOpenSignUP(false);
   const handleAccountOpen = () => setOpenAccount(true);
   const handleAccountClose = () => setOpenAccount(false);
-  const handleDeleteAccountOpen = () => setOpenDeleteAccount(true);
   const handleDeleteAccountClose = () => setOpenDeleteAccount(false);
   const [signUpName, setSignUpName] = useState('Not Set');
   const [signUpBio, setSignUpBio] = useState();
@@ -123,7 +122,6 @@ const Layout = ({ children }) => {
   const [signupErrorMessage, setSignupErrorMessage] = useState();
   const [loginMessageDisplay, setLoginMessageDisplay] = useState('none');
   const [notesRendering, setNotesRendering] = useState();
-  const [accountBtnDisplay, setAccountBtnDisplay] = useState('block');
 
   const {
     register,

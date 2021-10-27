@@ -14,7 +14,8 @@ import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import { useHistory } from 'react-router';
 import db from '../firebase';
 import { collection, addDoc } from '@firebase/firestore';
-import { getAuth, onAuthStateChanged } from '@firebase/auth';
+import { getAuth } from '@firebase/auth';
+import { Box } from '@mui/system';
 
 export default function Create() {
   const history = useHistory();
@@ -78,7 +79,12 @@ export default function Create() {
       >
         create a new note
       </Typography>
-      <form noValidate autoComplete='off' onSubmit={handleSubmit}>
+      <Box
+        component='form'
+        noValidate
+        autoComplete='off'
+        onSubmit={handleSubmit}
+      >
         <TextField
           onChange={(e) => setTitle(e.target.value)}
           label='Note Title'
@@ -153,7 +159,7 @@ export default function Create() {
         >
           Submit
         </Button>
-      </form>
+      </Box>
     </Container>
   );
 }
