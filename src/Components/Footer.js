@@ -12,8 +12,6 @@ export const Footer = () => {
         background: '#003366',
         color: 'white',
         fontWeight: 'bold',
-        position: 'absolute',
-        bottom: 0,
         width: '100%',
         textAlign: 'center',
         display: { xs: 'block', sm: 'none' },
