@@ -13,11 +13,12 @@ export default function Notes() {
   const [userUID, setUserUID] = useState(null);
   const [addNoteDisplay, setaddNoteDisplay] = useState('none');
   const [notes, setNotes] = useState([]);
+  const [userLinks, setUserLinks] = useState('none');
   const getUserNotes = () => {
     onAuthStateChanged(auth, (user) => {
       if (user) {
         setUserUID(auth.currentUser.uid);
-
+        setUserLinks('block');
         onSnapshot(collection(db, 'notes'), (snapshot) => {
           setNotes(snapshot.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
         });
@@ -25,6 +26,8 @@ export default function Notes() {
         setaddNoteDisplay('flex');
         // ...
       } else {
+        setUserLinks('none');
+
         setaddNoteDisplay('none');
         setNotes([]);
         console.log('User logged out');
@@ -49,7 +52,7 @@ export default function Notes() {
     700: 1,
   };
   return (
-    <Container>
+    <Container sx={{ display: userLinks }}>
       <Masonry
         breakpointCols={breakpoints}
         className='my-masonry-grid'
@@ -59,7 +62,7 @@ export default function Notes() {
           ? notes
               .filter((note) => note.userId === userUID)
               .map((note) => (
-                <div key={userUID}>
+                <div>
                   <NoteCard
                     note={note}
                     handleDelete={handleDelete}

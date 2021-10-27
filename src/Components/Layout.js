@@ -261,12 +261,12 @@ const Layout = ({ children }) => {
       });
   };
   const SignOutUser = () => {
-    setNotesRendering(null);
+    history.push('/');
     auth.signOut().catch((error) => {
       console.log(error.message);
     });
 
-    history.push('/');
+    setNotesRendering(null);
   };
 
   const handleUserDelete = () => {
