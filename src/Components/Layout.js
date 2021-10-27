@@ -277,23 +277,18 @@ const Layout = ({ children }) => {
   };
 
   return (
-    <Box
-      sx={{
-        display: 'flex',
-        flexDirection: { xs: 'column', sm: 'row' },
-        overflow: 'hidden',
-      }}
-    >
+    <Box sx={{ display: 'flex' }}>
       {/* app bar */}
-      <Header />
       <AppBar
         color='inherit'
         elevation={0}
         sx={{
           width: { sm: `calc(100% - ${drawerWidth}px)`, xs: '100%' },
-          marginTop: { xs: '4.5rem', sm: 0 },
+          height: { xs: '130px', sm: '74px' },
         }}
       >
+        <Header />
+
         <Toolbar
           sx={{
             xs: {
@@ -745,7 +740,7 @@ const Layout = ({ children }) => {
       <Box
         sx={{ background: '#f9f9f9', width: '100%', padding: theme.spacing(3) }}
       >
-        <Box sx={theme.mixins.toolbar}></Box>
+        <Box sx={{ height: { xs: '130px', sm: '74px' } }}></Box>
         {notesRendering}
         <Typography
           variant='h4'
