@@ -124,22 +124,22 @@ export default function Create() {
             }}
           >
             <FormControlLabel
-              value='Money'
+              value='money'
               control={<Radio color='secondary' />}
               label='Money'
             />
             <FormControlLabel
-              value='Todos'
+              value='todos'
               control={<Radio color='secondary' />}
               label='Todos'
             />
             <FormControlLabel
-              value='Reminders'
+              value='reminders'
               control={<Radio color='secondary' />}
               label='Reminders'
             />
             <FormControlLabel
-              value='Work'
+              value='work'
               control={<Radio color='secondary' />}
               label='Work'
             />
