@@ -41,7 +41,7 @@ import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { useForm } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { display } from '@mui/system';
+import { Header } from './Header';
 
 const drawerWidth = 240;
 
@@ -197,13 +197,7 @@ const Layout = ({ children }) => {
   }, [profilePhoto]);
 
   const theme = useTheme();
-  const classes = {
-    page: {
-      background: '#f9f9f9',
-      width: '100%',
-      padding: theme.spacing(3),
-    },
-  };
+
   const history = useHistory();
   const location = useLocation();
 
@@ -285,13 +279,15 @@ const Layout = ({ children }) => {
   };
 
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' } }}>
       {/* app bar */}
+      <Header />
       <AppBar
         color='inherit'
         elevation={0}
         sx={{
           width: { sm: `calc(100% - ${drawerWidth}px)`, xs: '100%' },
+          marginTop: { xs: '4.5rem', sm: 0 },
         }}
       >
         <Toolbar
@@ -680,6 +676,7 @@ const Layout = ({ children }) => {
           {/* side drawer */}
         </Toolbar>
       </AppBar>
+
       <Drawer
         sx={{
           width: drawerWidth,
@@ -741,7 +738,9 @@ const Layout = ({ children }) => {
           © 2021 Abdulmajeed Kutaibani <br /> abodymeo@gmail.com
         </Typography>
       </Drawer>
-      <Box sx={classes.page}>
+      <Box
+        sx={{ background: '#f9f9f9', width: '100%', padding: theme.spacing(3) }}
+      >
         <Box sx={theme.mixins.toolbar}></Box>
         {notesRendering}
         <Typography

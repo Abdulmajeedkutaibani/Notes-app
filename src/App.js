@@ -6,6 +6,7 @@ import { purple } from '@mui/material/colors';
 import Layout from './Components/Layout';
 import { Typography } from '@mui/material';
 import { Footer } from './Components/Footer';
+import { Header } from './Components/Header';
 
 const theme = createTheme({
   typography: {
