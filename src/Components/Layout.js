@@ -734,7 +734,13 @@ const Layout = ({ children }) => {
             fontWeight: 'bold',
           }}
         >
-          © 2021 Abdulmajeed Kutaibani <br /> abodymeo@gmail.com
+          © 2021 Abdulmajeed Kutaibani <br />{' '}
+          <a
+            href='mailto:abodymeo@gmail.com'
+            style={{ color: 'white', textDecoration: 'none' }}
+          >
+            abodymeo@gmail.com
+          </a>
         </Typography>
       </Drawer>
       <Box
