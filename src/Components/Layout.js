@@ -63,8 +63,8 @@ const style = {
   left: '50%',
   transform: 'translate(-50%, -50%)',
   maxWidth: 400,
-  width: '50%',
-  minWidth: 100,
+  width: '60%',
+  minWidth: 150,
   bgcolor: 'background.paper',
   border: '2px solid #000',
   borderRadius: '8px',
@@ -115,6 +115,7 @@ const Layout = ({ children }) => {
   const [signUpBio, setSignUpBio] = useState();
   const [guestLinks, setGuestLinks] = useState('none');
   const [userLinks, setUserLinks] = useState('none');
+  const [avatarDisplay, setAvatarDisplay] = useState('none');
   const [accountInfo, setAccountInfo] = useState();
   const [profilePhoto, setProfilePhoto] = useState(null);
   const [imageUrl, setImageUrl] = useState();
@@ -146,6 +147,7 @@ const Layout = ({ children }) => {
       setNotesRendering(children);
       setLoginMessageDisplay('none');
       setUserLinks('block');
+      setAvatarDisplay('flex');
       setGuestLinks('none');
       setAccountInfo(user.email);
       onSnapshot(doc(db, 'users', auth.currentUser.uid), (doc) => {
@@ -163,6 +165,7 @@ const Layout = ({ children }) => {
     } else {
       setLoginMessageDisplay('block');
       setUserLinks('none');
+      setAvatarDisplay('none');
       setGuestLinks('block');
       setAccountInfo('');
       setImageUrl(null);
@@ -352,7 +355,7 @@ const Layout = ({ children }) => {
             src={imageUrl}
             sx={{
               marginLeft: theme.spacing(2),
-              display: userLinks,
+              display: avatarDisplay,
               cursor: 'pointer',
             }}
             onClick={handleAccountOpen}
@@ -576,7 +579,7 @@ const Layout = ({ children }) => {
                   <Typography id='modal-modal-title' variant='h5'>
                     Logged in as:
                     <br />
-                    <Typography variant='h6' color='green' component='span'>
+                    <Typography variant='body1' color='green' component='span'>
                       {signUpName}
                     </Typography>
                   </Typography>
@@ -584,7 +587,12 @@ const Layout = ({ children }) => {
                 <Grid item xs={12} sx={{ mx: 'auto' }}>
                   <Typography id='modal-modal-title' variant='h5'>
                     User Email: <br />
-                    <Typography variant='h6' color='teal' component='span'>
+                    <Typography
+                      variant='h6'
+                      color='teal'
+                      component='span'
+                      sx={{ wordWrap: 'break-word' }}
+                    >
                       {accountInfo}
                     </Typography>
                   </Typography>
@@ -593,7 +601,12 @@ const Layout = ({ children }) => {
                   <Typography id='modal-modal-title' variant='h5'>
                     Bio:
                     <br />
-                    <Typography variant='h6' color='red' component='span'>
+                    <Typography
+                      variant='h6'
+                      color='red'
+                      component='span'
+                      sx={{ wordWrap: 'break-word' }}
+                    >
                       {signUpBio}
                     </Typography>
                   </Typography>
